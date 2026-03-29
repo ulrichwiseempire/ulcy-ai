@@ -1,90 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ULCY AI Pro</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #fafaff; margin: 0; padding: 20px; }
+        .card { width: 100%; max-width: 380px; text-align: center; background: white; border-radius: 36px; padding: 32px 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.05), 0 4px 12px rgba(0,0,0,0.03); transition: all 0.2s; border: 1px solid #f0eef7; }
+        .brand { font-weight: 800; font-size: 1.8rem; letter-spacing: 3px; margin-bottom: 8px; background: linear-gradient(135deg, #7b61ff, #9b7eff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .sub { color: #7b7c9e; font-size: 0.75rem; margin-bottom: 28px; letter-spacing: 1px; }
+        select { width: 100%; padding: 14px 16px; border-radius: 60px; margin-bottom: 28px; border: 1px solid #e2e0f0; background: white; font-size: 1rem; font-weight: 500; cursor: pointer; transition: 0.2s; outline: none; color: #1f1a3e; }
+        select:focus { border-color: #7b61ff; box-shadow: 0 0 0 3px rgba(123,97,255,0.2); }
+        .word-box { background: #f9f8ff; border-radius: 32px; padding: 28px 16px; margin: 16px 0 28px; box-shadow: inset 0 1px 2px #ffffff80, 0 2px 6px rgba(0,0,0,0.02); }
+        #display-fr { font-size: 1.35rem; font-weight: 700; color: #1e1a3c; margin-bottom: 12px; letter-spacing: -0.2px; }
+        #display-target { font-size: 1.1rem; color: #7b61ff; font-weight: 500; background: #ffffffcc; display: inline-block; padding: 6px 16px; border-radius: 60px; backdrop-filter: blur(2px); }
+        .btn-group { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
+        .btn { width: 100%; padding: 16px; border: none; border-radius: 60px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 10px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .btn-speak { background: #7b61ff; color: white; border: none; box-shadow: 0 8px 20px rgba(123,97,255,0.25); }
+        .btn-speak:hover { background: #6446f0; transform: scale(0.98); }
+        .btn-listen { background: #f4f2ff; color: #7b61ff; border: 1px solid #e5dfff; }
+        .btn-listen:hover { background: #e9e5ff; }
+        #result { margin-top: 24px; font-weight: 500; font-size: 0.9rem; padding: 12px; border-radius: 40px; background: #fefaf5; transition: 0.1s; }
+        .success { color: #0f7b3a; background: #e2f7ea; display: inline-block; padding: 8px 18px; border-radius: 60px; font-weight: 600; }
+        .error { color: #bc3f2e; background: #ffe8e5; display: inline-block; padding: 8px 18px; border-radius: 60px; font-weight: 500; }
+        .mic-loading { animation: pulse 1s infinite; background: #a18eff; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+        footer { font-size: 0.7rem; color: #aaa9c4; margin-top: 28px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="brand">ULCY AI</div>
+    <div class="sub">pronounce & speak</div>
+    <select id="lang-select"></select>
+    <div class="word-box">
+        <div id="display-fr">✨ Prêt à apprendre ✨</div>
+        <div id="display-target">—</div>
+    </div>
+    <div class="btn-group">
+        <button class="btn btn-listen" id="btn-listen">🔊 ÉCOUTER LA PHRASE</button>
+        <button class="btn btn-speak" id="btn-mic">🎙️ PARLER & VÉRIFIER</button>
+    </div>
+    <div id="result"></div>
+    <footer>prononciation intelligente • feedback vocal</footer>
+</div>
+
 <script>
-    // ON UTILISE UN OBJET LOCAL AU LIEU D'UN FICHIER JSON EXTERNE (PLUS FIABLE)
+    // ---------- BANQUES DE PHRASES (plus riches pour chaque langue) ----------
     const banques = {
-        "en-US": [
-            { t: "Success is a journey", fr: "Le succès est un voyage" },
-            { t: "Digital transformation", fr: "Transformation digitale" },
-            { t: "Sustainable income", fr: "Revenu durable (Fric durable)" },
-            { t: "Nice to meet you", fr: "Enchanté" },
-            { t: "Business automation", fr: "Automatisation d'entreprise" }
-        ],
         "pt-PT": [
-            { t: "Bom dia", fr: "Bonjour" },
             { t: "Quanto custa?", fr: "Combien ça coûte ?" },
-            { t: "Obrigado", fr: "Merci" },
-            { t: "É um prazer", fr: "C'est un plaisir" }
+            { t: "É um prazer", fr: "C'est un plaisir" },
+            { t: "O mercado é grande", fr: "Le marché est grand" },
+            { t: "Eu confio em você", fr: "Je vous fais confiance" },
+            { t: "Bom dia", fr: "Bonjour" },
+            { t: "Obrigado", fr: "Merci" }
+        ],
+        "pt-BR": [
+            { t: "Vamos fechar o negócio", fr: "On va conclure l'affaire" },
+            { t: "Tudo joia", fr: "Tout va bien (Brésil)" },
+            { t: "Fique tranquilo", fr: "Reste tranquille" },
+            { t: "Com certeza", fr: "Avec certitude" },
+            { t: "Beleza", fr: "Super / D'accord" }
+        ],
+        "ru-RU": [
+            { t: "Привет", fr: "Salut" },
+            { t: "Я продавец", fr: "Je suis un vendeur" },
+            { t: "Хорошо", fr: "C'est bien / D'accord" },
+            { t: "До свидания", fr: "Au revoir" },
+            { t: "Спасибо", fr: "Merci" },
+            { t: "Сколько стоит?", fr: "Combien ça coûte ?" }
+        ],
+        "de-DE": [
+            { t: "Guten Tag", fr: "Bonjour" },
+            { t: "Das ist teuer", fr: "C'est cher" },
+            { t: "Ich verstehe", fr: "Je comprends" },
+            { t: "Sehr gut", fr: "Très bien" },
+            { t: "Auf Wiedersehen", fr: "Au revoir" },
+            { t: "Danke", fr: "Merci" }
         ],
         "es-ES": [
-            { t: "Hola", fr: "Salut" },
+            { t: "Hola amigo", fr: "Salut l'ami" },
             { t: "Es una buena oferta", fr: "C'est une bonne offre" },
-            { t: "Muchas gracias", fr: "Merci beaucoup" }
+            { t: "Me gusta mucho", fr: "J'aime beaucoup" },
+            { t: "¿Dónde está el banco?", fr: "Où est la banque ?" },
+            { t: "Gracias", fr: "Merci" }
+        ],
+        "it-IT": [
+            { t: "Ciao", fr: "Salut" },
+            { t: "Bellissimo", fr: "Très beau" },
+            { t: "Amo il Togo", fr: "J'aime le Togo" },
+            { t: "Buona fortuna", fr: "Bonne chance" },
+            { t: "Grazie", fr: "Merci" }
         ],
         "zh-CN": [
             { t: "你好", fr: "Bonjour" },
             { t: "谢谢", fr: "Merci" },
+            { t: "我要买", fr: "Je veux acheter" },
+            { t: "太贵了", fr: "C'est trop cher" },
             { t: "再见", fr: "Au revoir" }
         ]
     };
 
+    // Noms des langues pour le menu déroulant
     const nomsLangues = {
-        "en-US": "🇺🇸 Anglais (US)",
-        "pt-PT": "🇵🇹 Portugais (PT)",
+        "pt-PT": "🇵🇹 Portugais (Portugal)",
+        "pt-BR": "🇧🇷 Portugais (Brésil)",
+        "ru-RU": "🇷🇺 Russe",
+        "de-DE": "🇩🇪 Allemand",
         "es-ES": "🇪🇸 Espagnol",
-        "zh-CN": "🇨🇳 Chinois"
+        "it-IT": "🇮🇹 Italien",
+        "zh-CN": "🇨🇳 Chinois (mandarin)"
     };
 
-    let phraseActuelle = {};
+    let phraseActuelle = { t: "", fr: "" };
+    let syntheseEnCours = false;   // éviter les conflits de synthèse vocale
     const selectLang = document.getElementById('lang-select');
     const displayFr = document.getElementById('display-fr');
     const displayTarget = document.getElementById('display-target');
     const resultDiv = document.getElementById('result');
     const btnMic = document.getElementById('btn-mic');
+    const btnListen = document.getElementById('btn-listen');
 
-    // Remplir le menu
+    // Remplir le select
     for (let code in banques) {
-        selectLang.add(new Option(nomsLangues[code], code));
+        let option = new Option(nomsLangues[code] || code, code);
+        selectLang.add(option);
     }
 
+    // Fonction pour choisir une nouvelle phrase aléatoire dans la langue active
     function nouvellePhrase() {
-        const phrases = banques[selectLang.value];
-        phraseActuelle = phrases[Math.floor(Math.random() * phrases.length)];
+        const langue = selectLang.value;
+        if (!banques[langue] || banques[langue].length === 0) return;
+        const phrases = banques[langue];
+        const index = Math.floor(Math.random() * phrases.length);
+        phraseActuelle = { ...phrases[index] };
         displayFr.innerText = phraseActuelle.fr;
         displayTarget.innerText = phraseActuelle.t;
+        // Effacer le résultat précédent
         resultDiv.innerHTML = "";
     }
 
-    function verifier() {
-        const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!Recognition) return;
-
-        const rec = new Recognition();
-        rec.lang = selectLang.value;
-        btnMic.innerText = "🎙️ ÉCOUTE...";
+    // ÉCOUTER : synthèse vocale de la phrase cible (dans la langue sélectionnée)
+    function ecouterPhrase() {
+        if (!phraseActuelle.t) {
+            nouvellePhrase();
+        }
+        if (syntheseEnCours) {
+            window.speechSynthesis.cancel();
+            syntheseEnCours = false;
+        }
+        const utterance = new SpeechSynthesisUtterance(phraseActuelle.t);
+        utterance.lang = selectLang.value;
+        utterance.rate = 0.85;   // légèrement plus lent pour bien entendre
+        utterance.pitch = 1.0;
         
-        rec.onresult = (e) => {
-            const dit = e.results.transcript.toLowerCase().trim();
-            const cible = phraseActuelle.t.toLowerCase().trim();
-
-            // Vérification simplifiée pour éviter les blocages
-            if (dit.includes(cible.replace(/[?.!,]/g, '')) || cible.includes(dit)) {
-                resultDiv.innerHTML = "<span class='success'>🎉 BRAVO ! PASSAGE AU SUIVANT...</span>";
-                setTimeout(nouvellePhrase, 1500);
-            } else {
-                resultDiv.innerHTML = `<span class='error'>✖️ Tu as dit : "${e.results.transcript}"</span>`;
-            }
-        };
-
-        rec.onend = () => { btnMic.innerText = "🎙️ PARLER & VÉRIFIER"; };
-        rec.start();
+        utterance.onstart = () => { syntheseEnCours = true; };
+        utterance.onend = () => { syntheseEnCours = false; };
+        utterance.onerror = () => { syntheseEnCours = false; };
+        
+        window.speechSynthesis.speak(utterance);
     }
 
-    selectLang.onchange = nouvellePhrase;
-    document.getElementById('btn-listen').onclick = () => {
-        window.speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance(phraseActuelle.t);
-        u.lang = selectLang.value;
-        window.speechSynthesis.speak(u);
-    };
-    btnMic.onclick = verifier;
-    window.onload = nouvellePhrase;
+    // VÉRIFICATION VOCALE : reconnaissance + feedback intelligent
+    function demarrerReconnaissance() {
+        if (!phraseActuelle.t) {
+            nouvellePhrase();
+        }
+        // Vérifier si l'API SpeechRecognition est supportée
+        const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognitionAPI) {
+            resultDiv.innerHTML = "<span class='error'>❌ Votre navigateur ne supporte pas la reconnaissance vocale. Essayez Chrome, Edge ou Safari.</span>";
+            return;
+        }
+        
+        const recognition = new SpeechRecognitionAPI();
+        recognition.lang = selectLang.value;      // langue cible pour la reconnaissance
+        recognition.interimResults = false;       // on veut le résultat final
+        recognition.maxAlternatives = 1;
+        
+        // Modifier l'interface utilisateur pendant l'écoute
+        const originalBtnText = btnMic.innerHTML;
+        btnMic.innerHTML = "🎙️ ÉCOUTE EN COURS...";
+        btnMic.disabled = true;
+        btnListen.disabled = true;
+        btnMic.classList.add("mic-loading");
+        resultDiv.innerHTML = "<span style='color:#7b61ff;'>🎤 Parlez maintenant...</span>";
+        
+        recognition.start();
+        
+        recognition.onresult = (event) => {
+            let paroleReconnue = event.results[0][0].transcript;
+            // normalisation : minuscules, suppression des accents légers, ponctuation
+            const cibleNormalisee = phraseActuelle.t.toLowerCase().replace(/[^\w\s]/g, '').trim();
+            const ditNormalise = paroleReconnue.toLowerCase().replace(/[^\w\s]/g, '').trim();
+            
+            // Critère de correspondance amélioré : inclusion partielle ou correspondance proche
+            const estCorrect = (cibleNormalisee === ditNormalise) || 
+                               (ditNormalise.includes(cibleNormalisee)) || 
+                               (cibleNormalisee.includes(ditNormalise)) ||
+                               (similariteSimple(cibleNormalisee, ditNormalise) > 0.7);
+            
+            if (estCorrect) {
+                resultDiv.innerHTML = "<span class='success'>🎉 BRAVO ! Prononciation correcte 🎉</span>";
+                // Charger une nouvelle phrase après 2 secondes
+                setTimeout(() => {
+                    nouvellePhrase();
+                    resultDiv.innerHTML = "";
+                }, 1800);
+            } else {
+                resultDiv.innerHTML = `<span class='error'>✖️ Vous avez dit : “${paroleReconnue}”<br>Attendu : “${phraseActuelle.t}”</span>`;
+            }
+            reinstateButtons();
+        };
+        
+        recognition.onerror = (event) => {
+            console.error("Erreur reconnaissance :", event.error);
+            let message = "";
+            if (event.error === "not-allowed") message = "🔇 Microphone refusé. Autorisez l'accès au micro.";
+            else if (event.error === "no-speech") message = "🎙️ Aucune parole détectée. Réessayez.";
+            else message = `Erreur : ${event.error}`;
+            resultDiv.innerHTML = `<span class='error'>⚠️ ${message}</span>`;
+            reinstateButtons();
+        };
+        
+        recognition.onend = () => {
+            // déjà géré par onresult ou onerror, mais sécurité
+            if (btnMic.disabled) reinstateButtons();
+        };
+        
+        function reinstateButtons() {
+            btnMic.innerHTML = originalBtnText;
+            btnMic.disabled = false;
+            btnListen.disabled = false;
+            btnMic.classList.remove("mic-loading");
+        }
+    }
+    
+    // petite fonction de similarité simple (ratio de correspondance)
+    function similariteSimple(str1, str2) {
+        if (str1 === str2) return 1.0;
+        const plusCourt = str1.length < str2.length ? str1 : str2;
+        const plusLong = str1.length >= str2.length ? str1 : str2;
+        if (plusLong.length === 0) return 0;
+        let matchCount = 0;
+        for (let i = 0; i < plusCourt.length; i++) {
+            if (plusLong.includes(plusCourt[i])) matchCount++;
+        }
+        return matchCount / plusLong.length;
+    }
+    
+    // Événements
+    selectLang.addEventListener("change", () => {
+        // Quand on change de langue, nouvelle phrase immédiate
+        nouvellePhrase();
+        // Si une synthèse était en cours, on l'arrête proprement
+        if (syntheseEnCours) {
+            window.speechSynthesis.cancel();
+            syntheseEnCours = false;
+        }
+        resultDiv.innerHTML = "";
+    });
+    
+    btnListen.addEventListener("click", ecouterPhrase);
+    btnMic.addEventListener("click", demarrerReconnaissance);
+    
+    // Initialisation : première phrase
+    window.addEventListener("load", () => {
+        nouvellePhrase();
+    });
+    
+    // Petit correctif : si le navigateur garde des synthèses en attente, on les nettoie au changement de page virtuel
+    window.addEventListener("beforeunload", () => {
+        if (window.speechSynthesis) window.speechSynthesis.cancel();
+    });
 </script>
+</body>
+</html>
