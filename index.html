@@ -1,38 +1,38 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-3B0B5PSCN1"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8SZEW3KEXH"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-3B0B5PSCN1');
+      gtag('config', 'G-8SZEW3KEXH');
     </script>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ULCY AI - Omni Business</title>
+    <title>ULCY AI Pro</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #fafaff; margin: 0; padding: 20px; }
-        .card { width: 100%; max-width: 400px; text-align: center; background: white; border-radius: 36px; padding: 32px 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); border: 1px solid #f0eef7; }
-        .brand { font-weight: 800; font-size: 1.8rem; border-bottom: 2px solid #7b61ff; display: inline-block; margin-bottom: 8px; color: #1e1a3c; }
-        .sub { color: #7b7c9e; font-size: 0.75rem; margin-bottom: 20px; letter-spacing: 1px; text-transform: uppercase; }
-        .stats { font-size: 0.8rem; color: #7b61ff; font-weight: 600; margin-bottom: 15px; background: #f4f2ff; padding: 5px 15px; border-radius: 20px; display: inline-block; }
-        select { width: 100%; padding: 14px 16px; border-radius: 60px; margin-bottom: 20px; border: 1px solid #e2e0f0; background: white; font-size: 1rem; font-weight: 500; outline: none; color: #1f1a3e; cursor: pointer; }
-        .word-box { background: #f9f8ff; border-radius: 32px; padding: 25px 16px; margin-bottom: 10px; min-height: 120px; display: flex; flex-direction: column; justify-content: center; }
-        #display-fr { font-size: 1.2rem; font-weight: 700; color: #1e1a3c; margin-bottom: 8px; }
-        #display-target { font-size: 1.1rem; color: #7b61ff; font-weight: 500; background: #ffffffcc; display: inline-block; padding: 6px 16px; border-radius: 60px; }
-        #smart-tip { font-size: 0.8rem; color: #9b7eff; font-style: italic; margin-bottom: 15px; min-height: 40px; line-height: 1.4; }
+        .card { width: 100%; max-width: 380px; text-align: center; background: white; border-radius: 36px; padding: 32px 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); border: 1px solid #f0eef7; }
+        .brand { font-weight: 800; font-size: 1.8rem; letter-spacing: 3px; margin-bottom: 8px; background: linear-gradient(135deg, #7b61ff, #9b7eff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .sub { color: #7b7c9e; font-size: 0.75rem; margin-bottom: 28px; letter-spacing: 1px; text-transform: uppercase; }
+        select { width: 100%; padding: 14px 16px; border-radius: 60px; margin-bottom: 20px; border: 1px solid #e2e0f0; background: white; font-size: 1rem; font-weight: 500; cursor: pointer; outline: none; }
+        .word-box { background: #f9f8ff; border-radius: 32px; padding: 28px 16px; margin: 16px 0 28px; }
+        #display-fr { font-size: 1.35rem; font-weight: 700; color: #1e1a3c; margin-bottom: 12px; }
+        #display-target { font-size: 1.1rem; color: #7b61ff; font-weight: 500; background: #ffffffcc; padding: 6px 16px; border-radius: 60px; }
         .btn-group { display: flex; flex-direction: column; gap: 12px; }
-        .btn { width: 100%; padding: 18px; border: none; border-radius: 60px; font-size: 1rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; }
+        .btn { width: 100%; padding: 16px; border: none; border-radius: 60px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .btn-speak { background: #7b61ff; color: white; box-shadow: 0 8px 20px rgba(123,97,255,0.25); }
         .btn-listen { background: #f4f2ff; color: #7b61ff; border: 1px solid #e5dfff; }
-        #result { margin-top: 20px; min-height: 50px; font-weight: 600; }
-        .success { color: #0f7b3a; background: #e2f7ea; padding: 10px 20px; border-radius: 60px; display: inline-block; }
-        .error { color: #bc3f2e; background: #ffe8e5; padding: 10px 20px; border-radius: 60px; display: inline-block; font-size: 0.85rem; }
-        .mic-loading { animation: pulse 1s infinite; background: #6446f0; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(0.98); opacity: 0.8; } 100% { transform: scale(1); } }
-        footer { font-size: 0.7rem; color: #aaa9c4; margin-top: 25px; }
+        #result { margin-top: 20px; min-height: 40px; }
+        .success { color: #0f7b3a; background: #e2f7ea; padding: 8px 18px; border-radius: 60px; font-weight: 600; animation: bounce 0.5s; }
+        .error { color: #bc3f2e; background: #ffe8e5; padding: 8px 18px; border-radius: 60px; font-size: 0.85rem; }
+        footer { font-size: 0.75rem; color: #aaa9c4; margin-top: 30px; font-weight: 500; }
+        .brand-footer { color: #7b61ff; font-weight: 700; text-decoration: none; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        .mic-loading { animation: pulse 1s infinite; background: #a18eff; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -40,134 +40,117 @@
 <div class="card">
     <div class="brand">ULCY AI</div>
     <div class="sub">Omni Learning Engine</div>
-    <div class="stats" id="counter">Mise à jour...</div>
-    
     <select id="lang-select"></select>
-    
     <div class="word-box">
-        <div id="display-fr">Chargement du lexique...</div>
+        <div id="display-fr">Chargement...</div>
         <div id="display-target">—</div>
     </div>
-    <div id="smart-tip">Le savoir est une arme.</div>
-    
     <div class="btn-group">
         <button class="btn btn-listen" id="btn-listen">🔊 ÉCOUTER LE MODÈLE</button>
         <button class="btn btn-speak" id="btn-mic">🎙️ PARLER & VÉRIFIER</button>
     </div>
-    
     <div id="result"></div>
-    <footer>Propulsé par WiseEmpire Intelligence</footer>
+    <footer>Écosystème <span class="brand-footer">WiseEmpire</span></footer>
 </div>
 
 <script>
     const banques = {
         "en-US": [
-            { t: "I am confident we can help you", fr: "Je suis convaincu qu'on peut vous aider", tip: "💡 'Confident' montre votre assurance en closing." },
-            { t: "What are your business goals?", fr: "Quels sont vos objectifs ?", tip: "💡 Essentiel pour la phase de découverte client." },
-            { t: "The ROI is very clear here", fr: "Le retour sur investissement est clair", tip: "💡 ROI (Return On Investment) est le mot magique en vente." }
+            { t: "Nice to meet you", fr: "Enchanté de vous rencontrer" },
+            { t: "I need some help", fr: "J'ai besoin d'aide" },
+            { t: "How's your day going?", fr: "Comment se passe ta journée ?" },
+            { t: "Let's make a deal", fr: "Concluons un accord" },
+            { t: "Believe in yourself", fr: "Crois en toi" }
         ],
         "pt-PT": [
-            { t: "Gostaria de agendar uma reunião", fr: "J'aimerais planifier une réunion", tip: "💡 'Gostaria' est le conditionnel poli (Portugal)." },
-            { t: "Podemos assinar o contrato?", fr: "Pouvons-nous signer le contrat ?", tip: "💡 Direct, à utiliser quand le client est prêt." }
-        ],
-        "pt-BR": [
-            { t: "O mercado brasileiro é imenso", fr: "Le marché brésilien est immense", tip: "💡 Phrase d'ouverture stratégique au Brésil." },
-            { t: "Vamos bater a meta este mês", fr: "Nous allons atteindre l'objectif ce mois-ci", tip: "💡 Très utilisé en management d'équipe." }
-        ],
-        "ru-RU": [
-            { t: "Как дела в бизнесе?", fr: "Comment vont les affaires ?", tip: "💡 Idéal pour briser la glace (Small talk pro)." },
-            { t: "Это выгодное предложение", fr: "C'est une offre avantageuse", tip: "💡 Argument de vente puissant en russe." }
-        ],
-        "de-DE": [
-            { t: "Zeit ist Geld", fr: "Le temps c'est de l'argent", tip: "💡 La règle d'or de la productivité allemande." },
-            { t: "Was ist Ihr Ziel?", fr: "Quel est votre objectif ?", tip: "💡 Psychologie du travail : définir le cap." }
+            { t: "Quanto custa?", fr: "Combien ça coûte ?" },
+            { t: "É um prazer", fr: "C'est un plaisir" },
+            { t: "O mercado é grande", fr: "Le marché est grand" },
+            { t: "Bom dia", fr: "Bonjour" },
+            { t: "Obrigado", fr: "Merci" }
         ],
         "es-ES": [
-            { t: "La motivación es la clave", fr: "La motivation est la clé", tip: "💡 Conseil psy pour le management d'équipe." },
-            { t: "Es un placer conocerle", fr: "C'est un plaisir de vous rencontrer", tip: "💡 Le vouvoiement ('Le') est crucial en Espagne." }
+            { t: "Hola, ¿cómo estás?", fr: "Salut, comment vas-tu ?" },
+            { t: "Es una buena oferta", fr: "C'est une bonne offre" },
+            { t: "¿Dónde está le éxito?", fr: "Où se trouve le succès ?" },
+            { t: "Muchas gracias", fr: "Merci beaucoup" }
         ],
         "zh-CN": [
-            { t: "你好", fr: "Bonjour", tip: "💡 La base de toute relation." },
-            { t: "合作愉快", fr: "Heureux de collaborer", tip: "💡 La base du business relationnel en Chine." }
-        ],
-        "it-IT": [
-            { t: "Il successo è un viaggio", fr: "Le succès est un voyage", tip: "💡 Phrase de motivation pour tes statuts." },
-            { t: "Lavoriamo insieme", fr: "Travaillons ensemble", tip: "💡 Simple et efficace pour le partenariat." }
+            { t: "你好", fr: "Bonjour" },
+            { t: "谢谢", fr: "Merci" },
+            { t: "太贵了", fr: "C'est trop cher" },
+            { t: "我要这个", fr: "Je veux celui-là" }
         ]
+        // Tu peux rajouter les autres langues ici sur le même modèle
     };
 
-    const nomsLangues = { 
-        "en-US": "🇺🇸 Anglais Business", "pt-PT": "🇵🇹 Portugais (Portugal)", "pt-BR": "🇧🇷 Portugais (Brésil)", 
-        "ru-RU": "🇷🇺 Russe Business", "de-DE": "🇩🇪 Allemand Business", 
-        "es-ES": "🇪🇸 Espagnol Vente", "zh-CN": "🇨🇳 Chinois", "it-IT": "🇮🇹 Italien"
+    const nomsLangues = {
+        "en-US": "🇺🇸 Anglais (US)",
+        "pt-PT": "🇵🇹 Portugais (PT)",
+        "es-ES": "🇪🇸 Espagnol",
+        "zh-CN": "🇨🇳 Chinois"
     };
 
-    let indexPhrase = 0;
+    let phraseActuelle = {};
     const selectLang = document.getElementById('lang-select');
     const displayFr = document.getElementById('display-fr');
     const displayTarget = document.getElementById('display-target');
-    const smartTip = document.getElementById('smart-tip');
-    const counter = document.getElementById('counter');
     const resultDiv = document.getElementById('result');
     const btnMic = document.getElementById('btn-mic');
     const btnListen = document.getElementById('btn-listen');
 
-    for (let code in banques) { selectLang.add(new Option(nomsLangues[code], code)); }
+    for (let code in banques) {
+        selectLang.add(new Option(nomsLangues[code] || code, code));
+    }
 
-    function rafraichirAffichage() {
+    function nouvellePhrase() {
         const phrases = banques[selectLang.value];
-        const p = phrases[indexPhrase];
-        displayFr.innerText = p.fr;
-        displayTarget.innerText = p.t;
-        smartTip.innerText = p.tip || "💡 Écoutez attentivement l'accent.";
-        counter.innerText = `PHRASE ${indexPhrase + 1} / ${phrases.length}`;
+        phraseActuelle = phrases[Math.floor(Math.random() * phrases.length)];
+        displayFr.innerText = phraseActuelle.fr;
+        displayTarget.innerText = phraseActuelle.t;
         resultDiv.innerHTML = "";
     }
 
-    function changerLangue() { indexPhrase = 0; rafraichirAffichage(); }
-
     function ecouter() {
         window.speechSynthesis.cancel();
-        const p = banques[selectLang.value][indexPhrase];
-        const u = new SpeechSynthesisUtterance(p.t);
+        const u = new SpeechSynthesisUtterance(phraseActuelle.t);
         u.lang = selectLang.value;
-        u.rate = 0.85;
         window.speechSynthesis.speak(u);
     }
 
     function verifier() {
-        const SpeechAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechAPI) return alert("Microphone non supporté.");
-        const recognition = new SpeechAPI();
-        recognition.lang = selectLang.value;
-        btnMic.innerHTML = "🎙️ ANALYSE...";
-        btnMic.classList.add("mic-loading");
-        recognition.start();
+        const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!Recognition) return alert("Navigateur non compatible");
 
-        recognition.onresult = (event) => {
-            const dit = event.results.transcript.toLowerCase().trim();
-            const cible = banques[selectLang.value][indexPhrase].t.toLowerCase().replace(/[^\w\s]/g, '').trim();
+        const rec = new Recognition();
+        rec.lang = selectLang.value;
+        btnMic.classList.add("mic-loading");
+        btnMic.innerText = "🎙️ ÉCOUTE...";
+
+        rec.onresult = (e) => {
+            const dit = e.results.transcript.toLowerCase().replace(/[^\w\s]/g, '').trim();
+            const cible = phraseActuelle.t.toLowerCase().replace(/[^\w\s]/g, '').trim();
+
             if (dit.includes(cible) || cible.includes(dit)) {
-                resultDiv.innerHTML = "<span class='success'>🎉 BRAVO ! SUIVANTE...</span>";
-                if(typeof gtag === 'function') { gtag('event', 'win_ulcy', { 'lang': selectLang.value }); }
-                setTimeout(() => {
-                    indexPhrase = (indexPhrase + 1) % banques[selectLang.value].length;
-                    rafraichirAffichage();
-                }, 1500);
+                resultDiv.innerHTML = "<span class='success'>🎉 BRAVO ! PASSAGE AU SUIVANT...</span>";
+                if(typeof gtag === 'function') gtag('event', 'success', {'lang': selectLang.value});
+                setTimeout(nouvellePhrase, 2000);
             } else {
-                resultDiv.innerHTML = `<span class='error'>✖️ Entendu : "${dit}"</span>`;
+                resultDiv.innerHTML = `<span class='error'>✖️ Tu as dit : "${e.results.transcript}"</span>`;
             }
         };
-        recognition.onend = () => {
-            btnMic.innerHTML = "🎙️ PARLER & VÉRIFIER";
+
+        rec.onend = () => {
             btnMic.classList.remove("mic-loading");
+            btnMic.innerText = "🎙️ PARLER & VÉRIFIER";
         };
+        rec.start();
     }
 
-    selectLang.onchange = changerLangue;
+    selectLang.onchange = nouvellePhrase;
     btnListen.onclick = ecouter;
     btnMic.onclick = verifier;
-    window.onload = rafraichirAffichage;
+    window.onload = nouvellePhrase;
 </script>
 </body>
 </html>
