@@ -1,0 +1,18 @@
+{
+  "en-US": [
+    { "t": "I am confident we can help you", "fr": "Je suis convaincu qu'on peut vous aider", "tip": "💡 'Confident' montre votre assurance en closing." },
+    { "t": "The ROI is very clear here", "fr": "Le retour sur investissement est clair", "tip": "💡 ROI = Le mot magique pour convaincre un décideur." }
+  ],
+  "pt-PT": [
+    { "t": "Gostaria de agendar uma reunião", "fr": "J'aimerais planifier une réunion", "tip": "💡 'Gostaria' est le conditionnel poli au Portugal." }
+  ],
+  "pt-BR": [
+    { "t": "Vamos bater a meta este mês", "fr": "Nous allons atteindre l'objectif ce mois-ci", "tip": "💡 'Meta' est le mot clé du management brésilien." }
+  ],
+  "ru-RU": [
+    { "t": "Это выгодное предложение", "fr": "C'est une offre avantageuse", "tip": "💡 Psychologie de la vente : souligner le gain." }
+  ],
+  "de-DE": [
+    { "t": "Zeit ist Geld", "fr": "Le temps c'est de l'argent", "tip": "💡 La règle d'or de la productivité allemande." }
+  ]
+}
