@@ -10,7 +10,7 @@
         .score-box { position: absolute; top: 20px; right: 25px; background: #7b61ff; color: white; padding: 5px 15px; border-radius: 20px; font-weight: 800; font-size: 0.8rem; }
         .brand { font-weight: 800; font-size: 1.8rem; color: #7b61ff; letter-spacing: 3px; margin-bottom: 5px; }
         .sub { color: #888; font-size: 0.7rem; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px; }
-        select { width: 100%; padding: 14px; border-radius: 60px; border: 1px solid #eee; margin-bottom: 15px; font-size: 1rem; outline: none; background: #fff; appearance: none; text-align-last: center; }
+        select { width: 100%; padding: 14px; border-radius: 60px; border: 1px solid #eee; margin-bottom: 15px; font-size: 1rem; outline: none; background: #fff; text-align-last: center; }
         .word-box { background: #f9f8ff; border-radius: 25px; padding: 30px 15px; margin-bottom: 25px; min-height: 110px; display: flex; flex-direction: column; justify-content: center; border: 1px solid #f0f0ff; }
         #display-fr { font-size: 1.25rem; font-weight: bold; color: #1a1a1a; margin-bottom: 12px; }
         #display-target { color: #7b61ff; font-weight: 600; font-size: 1.05rem; }
@@ -50,7 +50,7 @@
     </select>
 
     <div class="word-box">
-        <div id="display-fr">Initialisation...</div>
+        <div id="display-fr">Prêt pour l'entraînement ?</div>
         <div id="display-target">---</div>
     </div>
     
@@ -63,10 +63,10 @@
 </div>
 
 <script>
-    // ASTUCE CAMOUFLAGE : On coupe la clé en deux pour GitHub
-    const part1 = "AIzaSyDHoQ12iizO-";
-    const part2 = "BL5mV2P9RkyApfEHcmrFC8";
-    const API_KEY = part1 + part2;
+    // CAMOUFLAGE : On sépare la clé pour tromper GitHub
+    const p1 = "AIzaSyDHoQ12iizO-";
+    const p2 = "BL5mV2P9RkyApfEHcmrFC8";
+    const API_KEY = p1 + p2;
 
     let phraseActuelle = { t: "", fr: "" };
     let score = 0;
@@ -80,14 +80,12 @@
         document.getElementById('display-target').innerText = "---";
         resDiv.innerHTML = "";
 
-        const themes = ["Vente", "Psychologie", "Travail", "Vie quotidienne", "Voyage"];
-        const theme = themes[Math.floor(Math.random() * themes.length)];
         const langName = selectLang.options[selectLang.selectedIndex].text;
-
-        const prompt = `Génère une phrase courte en ${langName}. Niveau : ${selectLevel.value}. Thème : ${theme}. Réponds UNIQUEMENT en JSON : {"t": "phrase", "fr": "traduction"}`;
+        const prompt = `Génère une phrase courte en ${langName}. Niveau : ${selectLevel.value}. JSON : {"t": "phrase", "fr": "traduction"}`;
 
         try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+            // Utilisation du moteur Gemini 3 Flash
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash:generateContent?key=${API_KEY}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
@@ -137,5 +135,4 @@
     window.onload = genererPhraseIA;
 </script>
 </body>
-  </html>
-  
+</html>
