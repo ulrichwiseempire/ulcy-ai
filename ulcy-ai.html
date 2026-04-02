@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ULCY AI - WiseEmpire</title>
+    
+    <!-- Google Analytics 4 - ID: G-WX900WEY0P -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WX900WEY0P"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-WX900WEY0P');
+        
+        console.log('✅ Google Analytics chargé avec ID: G-WX900WEY0P');
+        gtag('event', 'page_view', { 'page_title': 'ULCY AI' });
+    </script>
+    
+    <style>
+        body { font-family: -apple-system, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f8f9ff; margin: 0; padding: 20px; }
+        .card { width: 100%; max-width: 380px; text-align: center; background: white; border-radius: 36px; padding: 35px 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); position: relative; }
+        .score-box { position: absolute; top: 20px; right: 25px; background: #7b61ff; color: white; padding: 5px 15px; border-radius: 20px; font-weight: 800; font-size: 0.8rem; }
+        .brand { font-weight: 800; font-size: 1.8rem; color: #7b61ff; letter-spacing: 3px; margin-bottom: 5px; }
+        .sub { color: #888; font-size: 0.7rem; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px; }
+        select { width: 100%; padding: 14px; border-radius: 60px; border: 1px solid #eee; margin-bottom: 15px; font-size: 1rem; outline: none; background: #fff; text-align-last: center; cursor: pointer; }
+        .word-box { background: #f9f8ff; border-radius: 25px; padding: 30px 15px; margin-bottom: 25px; min-height: 110px; display: flex; flex-direction: column; justify-content: center; border: 1px solid #f0f0ff; }
+        #display-fr { font-size: 1.25rem; font-weight: bold; color: #1a1a1a; margin-bottom: 12px; }
+        #display-target { color: #7b61ff; font-weight: 600; font-size: 1.05rem; }
+        .btn { width: 100%; padding: 16px; border-radius: 60px; border: none; font-weight: bold; cursor: pointer; margin-bottom: 12px; transition: 0.3s; font-size: 0.95rem; }
+        .btn-speak { background: #7b61ff; color: white; box-shadow: 0 4px 15px rgba(123,97,255,0.3); }
+        .btn-speak:hover { transform: scale(0.98); background: #6a52e0; }
+        .btn-listen { background: #f0f0ff; color: #7b61ff; }
+        .btn-listen:hover { background: #e5e5ff; }
+        .btn-skip { background: transparent; color: #bbb; text-decoration: underline; font-size: 0.8rem; margin-top: 5px; cursor: pointer; border: none; }
+        .btn-skip:hover { color: #999; }
+        #result { min-height: 65px; margin-top: 15px; font-weight: bold; }
+        .success { color: #27ae60; background: #eafaf1; padding: 8px 15px; border-radius: 50px; display: inline-block; }
+        .error { color: #e74c3c; background: #fdecea; padding: 8px 15px; border-radius: 50px; display: inline-block; font-size: 0.85rem; }
+        .loading { color: #7b61ff; font-style: italic; }
+        footer { margin-top: 25px; font-size: 0.85rem; color: #bbb; }
+        .wise { color: #7b61ff; font-weight: 800; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="score-box">🏆 SCORE: <span id="score">0</span></div>
+    <div class="brand">ULCY AI</div>
+    <div class="sub">Omni Learning Engine</div>
+    
+    <select id="lang-select">
+        <option value="en-US">🇺🇸 Anglais</option>
+        <option value="pt-PT">🇵🇹 Portugais</option>
+        <option value="pt-BR">🇧🇷 Portugais (Brésil)</option>
+        <option value="it-IT">🇮🇹 Italien</option>
+        <option value="es-ES">🇪🇸 Espagnol</option>
+        <option value="ru-RU">🇷🇺 Russe</option>
+        <option value="de-DE">🇩🇪 Allemand</option>
+        <option value="zh-CN">🇨🇳 Chinois</option>
+    </select>
+
+    <select id="level-select">
+        <option value="débutant">📖 Niveau : Débutant</option>
+        <option value="intermédiaire">📚 Niveau : Moyen</option>
+        <option value="expert">🎓 Niveau : Expert</option>
+    </select>
+
+    <div class="word-box">
+        <div id="display-fr">✨ Prêt pour l'entraînement ?</div>
+        <div id="display-target">---</div>
+    </div>
+    
+    <button class="btn btn-listen" id="btn-listen">🔊 ÉCOUTER LE MODÈLE</button>
+    <button class="btn btn-speak" id="btn-mic">🎙️ PARLER & VÉRIFIER</button>
+    <button class="btn-skip" id="btn-skip">⏭️ Passer cette phrase</button>
+    
+    <div id="result"></div>
+    <footer>Propulsé par <span class="wise">WISEEMPIRE</span></footer>
+</div>
+
+<script>
+    // TA CLÉ API GEMINI (activée ✓)
+    const API_KEY = "AIzaSyCrfl5_9f-VJ_K6K38bUed-RDZHfcJvEqk";
+    const MODEL_NAME = "gemini-1.5-flash";
+    
+    let phraseActuelle = { t: "", fr: "" };
+    let score = 0;
+    let isLoading = false;
+    
+    const resDiv = document.getElementById('result');
+    const selectLang = document.getElementById('lang-select');
+    const selectLevel = document.getElementById('level-select');
+    const scoreDisplay = document.getElementById('score');
+    const displayFr = document.getElementById('display-fr');
+    const displayTarget = document.getElementById('display-target');
+
+    function cleanText(text) {
+        return text.toLowerCase().trim().replace(/[?.!,;:""''()]/g, '').replace(/\s+/g, ' ');
+    }
+
+    function calculateSimilarity(userText, targetText) {
+        const userWords = cleanText(userText).split(' ');
+        const targetWords = cleanText(targetText).split(' ');
+        
+        let matches = 0;
+        for (let word of userWords) {
+            if (targetWords.includes(word) && word.length > 2) {
+                matches++;
+            }
+        }
+        
+        const ratio = targetWords.length > 0 ? matches / targetWords.length : 0;
+        return ratio > 0.5;
+    }
+
+    async function genererPhraseIA() {
+        if (isLoading) return;
+        isLoading = true;
+        
+        displayFr.innerText = "🤔 Génération en cours...";
+        displayTarget.innerText = "---";
+        resDiv.innerHTML = '<span class="loading">⏳ L\'IA réfléchit...</span>';
+        
+        const langName = selectLang.options[selectLang.selectedIndex].text;
+        const level = selectLevel.value;
+        
+        const prompt = `Génère une phrase courte (5-10 mots) en ${langName} pour un étudiant niveau ${level}.
+        La phrase doit être utile et naturelle.
+        Réponds UNIQUEMENT avec ce format JSON, sans texte avant ou après :
+        {"t": "phrase en ${langName}", "fr": "traduction française"}
+        
+        Exemple : {"t": "Hello, how are you?", "fr": "Bonjour, comment vas-tu ?"}`;
+
+        try {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${API_KEY}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    contents: [{ parts: [{ text: prompt }] }],
+                    generationConfig: { temperature: 0.7, maxOutputTokens: 150 }
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.error) {
+                console.error("API Error:", data.error);
+                throw new Error(data.error.message || "Erreur API");
+            }
+            
+            const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (!rawText) throw new Error("Réponse vide");
+            
+            let cleanJson = rawText.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+            const firstBrace = cleanJson.indexOf('{');
+            const lastBrace = cleanJson.lastIndexOf('}');
+            if (firstBrace !== -1 && lastBrace !== -1) {
+                cleanJson = cleanJson.substring(firstBrace, lastBrace + 1);
+            }
+            
+            phraseActuelle = JSON.parse(cleanJson);
+            
+            if (!phraseActuelle.t || !phraseActuelle.fr) {
+                throw new Error("JSON invalide");
+            }
+            
+            displayFr.innerText = phraseActuelle.fr;
+            displayTarget.innerText = phraseActuelle.t;
+            resDiv.innerHTML = "";
+            
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'phrase_generated', {
+                    'language': selectLang.value,
+                    'level': level
+                });
+                console.log('📊 GA: phrase_generated');
+            }
+            
+        } catch (e) {
+            console.error("Erreur:", e);
+            displayFr.innerText = "⚠️ Mode hors-ligne";
+            displayTarget.innerText = "Hello, how are you?";
+            phraseActuelle = {
+                t: "Hello, how are you?",
+                fr: "Bonjour, comment vas-tu ?"
+            };
+            resDiv.innerHTML = "";
+        }
+        
+        isLoading = false;
+    }
+
+    document.getElementById('btn-listen').onclick = () => {
+        if (!phraseActuelle.t) return;
+        window.speechSynthesis.cancel();
+        let utterance = new SpeechSynthesisUtterance(phraseActuelle.t);
+        utterance.lang = selectLang.value;
+        utterance.rate = 0.9;
+        window.speechSynthesis.speak(utterance);
+        
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'listen', { 'language': selectLang.value });
+            console.log('📊 GA: listen');
+        }
+    };
+
+    document.getElementById('btn-mic').onclick = () => {
+        if (!phraseActuelle.t) {
+            resDiv.innerHTML = "<span class='error'>Chargement...</span>";
+            return;
+        }
+        
+        const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!Recognition) {
+            resDiv.innerHTML = "<span class='error'>❌ Micro non supporté</span>";
+            return;
+        }
+        
+        const recognizer = new Recognition();
+        recognizer.lang = selectLang.value;
+        recognizer.interimResults = false;
+        
+        resDiv.innerHTML = '<span class="loading">🎤 Parle maintenant...</span>';
+        
+        recognizer.onresult = (event) => {
+            const spoken = event.results[0][0].transcript;
+            const target = phraseActuelle.t;
+            
+            const isCorrect = calculateSimilarity(spoken, target);
+            
+            if (isCorrect) {
+                score += 10;
+                scoreDisplay.innerText = score;
+                resDiv.innerHTML = `<span class='success'>🎉 BRAVO ! +10 points (${score} pts)</span>`;
+                
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'correct_answer', {
+                        'language': selectLang.value,
+                        'score': score
+                    });
+                    console.log('📊 GA: correct_answer');
+                }
+                
+                setTimeout(() => genererPhraseIA(), 1500);
+            } else {
+                resDiv.innerHTML = `<span class='error'>📝 Tu as dit : "${spoken}"<br>💡 Attendu : "${target}"</span>`;
+                
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'wrong_answer', { 'language': selectLang.value });
+                    console.log('📊 GA: wrong_answer');
+                }
+            }
+        };
+        
+        recognizer.onerror = (event) => {
+            resDiv.innerHTML = `<span class='error'>❌ Erreur : ${event.error}</span>`;
+        };
+        
+        recognizer.start();
+    };
+
+    document.getElementById('btn-skip').onclick = () => {
+        genererPhraseIA();
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'skip_phrase');
+            console.log('📊 GA: skip_phrase');
+        }
+    };
+    
+    selectLang.onchange = () => {
+        genererPhraseIA();
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'language_changed', { 'language': selectLang.value });
+        }
+    };
+    
+    selectLevel.onchange = () => {
+        genererPhraseIA();
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'level_changed', { 'level': selectLevel.value });
+        }
+    };
+    
+    window.onload = genererPhraseIA;
+</script>
+</body>
+  </html>
