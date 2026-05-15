@@ -1,371 +1,577 @@
-    selectLevel.onchange = () => {
-        genererPhraseIA();
-        if (typeof gtag !== 'undefined') {
-            gtag('event', 'level_changed', { 'level': selectL<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ULCY AI - WiseEmpire</title>
-    
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WX900WEY0P"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-WX900WEY0P');
-    </script>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>ULCY AI Pro - Apprentissage de langues</title>
     <style>
-        body { font-family: -apple-system, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f8f9ff; margin: 0; padding: 20px; }
-        .card { width: 100%; max-width: 380px; text-align: center; background: white; border-radius: 36px; padding: 35px 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); position: relative; }
-        .score-box { position: absolute; top: 20px; right: 25px; background: #7b61ff; color: white; padding: 5px 15px; border-radius: 20px; font-weight: 800; font-size: 0.8rem; }
-        .brand { font-weight: 800; font-size: 1.8rem; color: #7b61ff; letter-spacing: 3px; margin-bottom: 5px; }
-        .sub { color: #888; font-size: 0.7rem; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px; }
-        select { width: 100%; padding: 14px; border-radius: 60px; border: 1px solid #eee; margin-bottom: 15px; font-size: 1rem; outline: none; background: #fff; text-align-last: center; cursor: pointer; }
-        .word-box { background: #f9f8ff; border-radius: 25px; padding: 30px 15px; margin-bottom: 25px; min-height: 130px; display: flex; flex-direction: column; justify-content: center; border: 1px solid #f0f0ff; }
-        #display-fr { font-size: 1.2rem; font-weight: bold; color: #1a1a1a; margin-bottom: 15px; }
-        #display-target { color: #7b61ff; font-weight: 600; font-size: 1.1rem; }
-        .label { font-size: 0.7rem; color: #aaa; margin-bottom: 5px; }
-        .btn { width: 100%; padding: 16px; border-radius: 60px; border: none; font-weight: bold; cursor: pointer; margin-bottom: 12px; transition: 0.3s; font-size: 0.95rem; }
-        .btn-speak { background: #7b61ff; color: white; box-shadow: 0 4px 15px rgba(123,97,255,0.3); }
-        .btn-speak:hover { transform: scale(0.98); background: #6a52e0; }
-        .btn-listen { background: #f0f0ff; color: #7b61ff; }
-        .btn-listen:hover { background: #e5e5ff; }
-        .btn-skip { background: transparent; color: #7b61ff; text-decoration: underline; font-size: 0.9rem; margin-top: 5px; cursor: pointer; border: none; font-weight: bold; }
-        .btn-skip:hover { color: #6a52e0; }
-        #result { min-height: 65px; margin-top: 15px; font-weight: bold; }
-        .success { color: #27ae60; background: #eafaf1; padding: 8px 15px; border-radius: 50px; display: inline-block; }
-        .error { color: #e74c3c; background: #fdecea; padding: 8px 15px; border-radius: 50px; display: inline-block; font-size: 0.85rem; }
-        .loading { color: #7b61ff; font-style: italic; }
-        footer { margin-top: 25px; font-size: 0.85rem; color: #bbb; }
-        .wise { color: #7b61ff; font-weight: 800; }
+        :root {
+            --primary: #7b61ff;
+            --primary-light: #a28eff;
+            --bg: #f8f7ff;
+            --card: #ffffff;
+            --text: #1e1a3c;
+            --text-light: #7b7c9e;
+            --success: #0f7b3a;
+            --error: #bc3f2e;
+            --warning: #e67e22;
+            --border: #e8e5f7;
+            --shadow: 0 8px 30px rgba(100, 80, 200, 0.08);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 420px;
+            height: 92vh;
+            max-height: 820px;
+            background: var(--card);
+            border-radius: 32px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .app-header {
+            padding: 18px 24px 10px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            letter-spacing: 3px;
+            background: linear-gradient(135deg, #7b61ff, #9b7eff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .sub {
+            color: var(--text-light);
+            font-size: 0.68rem;
+            letter-spacing: 1.5px;
+            margin-top: 2px;
+        }
+
+        .app-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 6px 18px 12px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .page {
+            display: none;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .page.active { display: flex; }
+
+        /* COMPOSANTS COMMUNS */
+        .word-box {
+            background: #f9f8ff;
+            border-radius: 22px;
+            padding: 22px 16px;
+            text-align: center;
+            box-shadow: inset 0 1px 2px #ffffff80, 0 2px 8px rgba(0,0,0,0.03);
+            position: relative;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .word-box .fr {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 8px;
+            transition: all 0.3s;
+        }
+        .word-box .target {
+            font-size: 1.05rem;
+            color: var(--primary);
+            font-weight: 500;
+            background: #ffffffcc;
+            display: inline-block;
+            padding: 5px 14px;
+            border-radius: 40px;
+            transition: all 0.3s;
+        }
+        .word-box .mode-badge {
+            position: absolute;
+            top: -10px;
+            right: 16px;
+            background: var(--primary);
+            color: white;
+            font-size: 0.65rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        .word-box .mode-badge.essentials { background: #f59e0b; }
+        .word-box .mode-badge.infinite { background: #10b981; }
+
+        .btn {
+            width: 100%;
+            padding: 14px 18px;
+            border: none;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            letter-spacing: 0.3px;
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 6px 18px rgba(123,97,255,0.3);
+        }
+        .btn-secondary {
+            background: #f4f2ff;
+            color: var(--primary);
+            border: 1px solid #e5dfff;
+        }
+        .btn-outline {
+            background: white;
+            color: var(--primary);
+            border: 1.5px solid var(--primary);
+        }
+        .btn-small {
+            width: auto;
+            padding: 8px 16px;
+            font-size: 0.75rem;
+            border-radius: 30px;
+        }
+
+        /* TOGGLE MODE */
+        .mode-toggle {
+            display: flex;
+            background: #f4f2ff;
+            border-radius: 40px;
+            padding: 4px;
+            gap: 4px;
+        }
+        .mode-toggle button {
+            flex: 1;
+            padding: 10px 12px;
+            border: none;
+            border-radius: 40px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            background: transparent;
+            color: #b0adc5;
+            letter-spacing: 0.3px;
+        }
+        .mode-toggle button.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 2px 8px rgba(123,97,255,0.15);
+        }
+
+        /* DIFFICULTÉ */
+        .difficulty-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.75rem;
+            color: var(--text-light);
+            padding: 0 4px;
+        }
+        .difficulty-row input[type=range] {
+            flex: 1;
+            -webkit-appearance: none;
+            height: 6px;
+            background: #e8e5f7;
+            border-radius: 10px;
+            outline: none;
+        }
+        .difficulty-row input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(123,97,255,0.3);
+        }
+
+        /* RÉSULTAT PRONONCIATION */
+        #result-prononciation {
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.82rem;
+            padding: 10px 14px;
+            border-radius: 30px;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .success-badge {
+            color: var(--success);
+            background: #e2f7ea;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-weight: 600;
+            animation: popIn 0.3s ease;
+        }
+        .error-badge {
+            color: var(--error);
+            background: #ffe8e5;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.78rem;
+            line-height: 1.4;
+        }
+        .mic-loading {
+            animation: pulse 0.8s infinite;
+            background: #a18eff !important;
+            color: white !important;
+        }
+
+        /* COMPTEUR */
+        .counter-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.7rem;
+            color: var(--text-light);
+        }
+        .counter-row span {
+            background: #f9f8ff;
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        /* TRADUCTION */
+        .lang-select-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .lang-select-row select {
+            flex: 1;
+            padding: 10px 12px;
+            border-radius: 30px;
+            border: 1px solid var(--border);
+            font-size: 0.82rem;
+            background: white;
+            cursor: pointer;
+            outline: none;
+        }
+        .translation-input {
+            width: 100%;
+            min-height: 80px;
+            padding: 14px;
+            border-radius: 18px;
+            border: 1.5px solid var(--border);
+            font-size: 0.95rem;
+            font-family: inherit;
+            resize: vertical;
+            background: #fdfcff;
+            outline: none;
+        }
+        .translation-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(123,97,255,0.1);
+        }
+        .translation-result-box {
+            background: #f9f8ff;
+            border-radius: 18px;
+            padding: 16px;
+            text-align: center;
+            display: none;
+            animation: fadeSlideIn 0.35s ease;
+        }
+        .translation-result-box.show { display: block; }
+        .translated-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 10px;
+        }
+
+        /* FLASHCARDS */
+        .flashcard {
+            perspective: 800px;
+            width: 100%;
+            height: 200px;
+            cursor: pointer;
+            margin: 4px 0;
+        }
+        .flashcard-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 0.5s;
+            transform-style: preserve-3d;
+        }
+        .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 22px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+        .flashcard-front {
+            background: linear-gradient(145deg, #f9f8ff, #f0edff);
+            border: 1px solid #e5dfff;
+        }
+        .flashcard-back {
+            background: linear-gradient(145deg, #f0fff4, #e2f7ea);
+            border: 1px solid #c8e6d0;
+            transform: rotateY(180deg);
+        }
+        .flashcard-word {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+        .flashcard-hint {
+            font-size: 0.72rem;
+            color: var(--text-light);
+        }
+        .flashcard-controls {
+            display: flex;
+            gap: 10px;
+        }
+        .flashcard-controls .btn { flex: 1; padding: 10px; font-size: 0.8rem; }
+        .btn-know { background: #e2f7ea; color: var(--success); }
+        .btn-dont-know { background: #ffe8e5; color: var(--error); }
+        .flashcard-counter {
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        /* NAVIGATION */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 6px 10px 14px;
+            background: white;
+            border-top: 1px solid #f0edf7;
+            flex-shrink: 0;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            padding: 6px 10px;
+            border-radius: 14px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            font-family: inherit;
+            font-size: 0.65rem;
+            color: #b0adc5;
+            font-weight: 500;
+            letter-spacing: 0.2px;
+            min-width: 55px;
+            transition: 0.2s;
+        }
+        .nav-item .nav-icon { font-size: 1.3rem; transition: 0.2s; }
+        .nav-item.active {
+            color: var(--primary);
+            background: #f4f2ff;
+        }
+        .nav-item.active .nav-icon { transform: translateY(-2px); }
+
+        /* ANIMATIONS */
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes fadeSlideIn {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .app-content::-webkit-scrollbar { width: 3px; }
+        .app-content::-webkit-scrollbar-thumb { background: #e0dbf5; border-radius: 10px; }
+
+        .text-center { text-align: center; }
+        .text-small { font-size: 0.7rem; color: var(--text-light); }
+        .mt-2 { margin-top: 8px; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <div class="score-box">🏆 SCORE: <span id="score">0</span></div>
-    <div class="brand">ULCY AI</div>
-    <div class="sub">Omni Learning Engine</div>
-    
-    <select id="lang-select">
-        <option value="en-US">🇺🇸 Anglais</option>
-        <option value="pt-PT">🇵🇹 Portugais</option>
-        <option value="pt-BR">🇧🇷 Portugais (Brésil)</option>
-        <option value="it-IT">🇮🇹 Italien</option>
-        <option value="es-ES">🇪🇸 Espagnol</option>
-        <option value="ru-RU">🇷🇺 Russe</option>
-        <option value="de-DE">🇩🇪 Allemand</option>
-        <option value="zh-CN">🇨🇳 Chinois</option>
-    </select>
-
-    <select id="level-select">
-        <option value="debutant">📖 Débutant (phrases simples)</option>
-        <option value="intermediaire">📚 Intermédiaire (phrases courantes)</option>
-        <option value="expert">🎓 Expert (expressions avancées)</option>
-    </select>
-
-    <div class="word-box">
-        <div class="label">🇫🇷 EN FRANÇAIS :</div>
-        <div id="display-fr">✨ Prêt pour l'entraînement ?</div>
-        <div class="label" style="margin-top: 15px;">🗣️ À PRONONCER :</div>
-        <div id="display-target">---</div>
+<div class="app-container">
+    <!-- HEADER -->
+    <div class="app-header">
+        <div class="brand">ULCY AI</div>
+        <div class="sub">apprends • prononce • traduis • ∞</div>
     </div>
-    
-    <button class="btn btn-listen" id="btn-listen">🔊 ÉCOUTER LE MODÈLE</button>
-    <button class="btn btn-speak" id="btn-mic">🎙️ PARLER & VÉRIFIER</button>
-    <button class="btn-skip" id="btn-skip">⏭️ Passer cette phrase</button>
-    
-    <div id="result"></div>
-    <footer>Propulsé par <span class="wise">WISEEMPIRE</span></footer>
+
+    <!-- CONTENU -->
+    <div class="app-content" id="app-content">
+
+        <!-- ========== PAGE 1 : PRONONCIATION ========== -->
+        <div class="page active" id="page-prononciation">
+            <!-- Toggle mode -->
+            <div class="mode-toggle" id="mode-toggle-prononciation">
+                <button class="active" data-mode="essentials">📋 Essentiel</button>
+                <button data-mode="infinite">♾️ Infini</button>
+            </div>
+
+            <!-- Sélecteur de langue -->
+            <select id="lang-select-prononciation" style="width:100%;padding:10px 12px;border-radius:30px;border:1px solid #e2e0f0;font-size:0.85rem;background:white;cursor:pointer;outline:none;"></select>
+
+            <!-- Curseur difficulté (mode infini) -->
+            <div class="difficulty-row" id="difficulty-row-prononciation">
+                <span>🌱 Court</span>
+                <input type="range" id="difficulty-prononciation" min="1" max="3" value="1" step="1">
+                <span>🌳 Long</span>
+            </div>
+
+            <!-- Zone d'affichage -->
+            <div class="word-box" id="word-box-prononciation">
+                <span class="mode-badge essentials" id="mode-badge-prononciation">Essentiel</span>
+                <div class="fr" id="display-fr">✨ Prêt à apprendre ✨</div>
+                <div class="target" id="display-target">—</div>
+            </div>
+
+            <!-- Compteur -->
+            <div class="counter-row">
+                <span id="counter-phrases-vues">📖 0 phrases vues</span>
+                <span id="counter-phrases-reussies">✅ 0 réussies</span>
+            </div>
+
+            <!-- Boutons -->
+            <button class="btn btn-secondary" id="btn-listen">🔊 ÉCOUTER LA PHRASE</button>
+            <button class="btn btn-primary" id="btn-mic">🎙️ PARLER & VÉRIFIER</button>
+            <div id="result-prononciation"></div>
+        </div>
+
+        <!-- ========== PAGE 2 : TRADUCTION ========== -->
+        <div class="page" id="page-traduction">
+            <div class="lang-select-row">
+                <select id="lang-source">
+                    <option value="fr">🇫🇷 Français</option>
+                    <option value="en">🇬🇧 Anglais</option>
+                    <option value="es">🇪🇸 Espagnol</option>
+                    <option value="de">🇩🇪 Allemand</option>
+                    <option value="pt">🇵🇹 Portugais</option>
+                    <option value="it">🇮🇹 Italien</option>
+                </select>
+                <span style="font-size:1.2rem;color:var(--primary);">→</span>
+                <select id="lang-cible">
+                    <option value="en">🇬🇧 Anglais</option>
+                    <option value="es">🇪🇸 Espagnol</option>
+                    <option value="de">🇩🇪 Allemand</option>
+                    <option value="pt">🇵🇹 Portugais</option>
+                    <option value="it">🇮🇹 Italien</option>
+                    <option value="fr">🇫🇷 Français</option>
+                </select>
+            </div>
+            <textarea class="translation-input" id="texte-a-traduire" placeholder="Tapez votre texte ici..."></textarea>
+            <button class="btn btn-primary" id="btn-traduire">🌐 TRADUIRE</button>
+            <div class="translation-result-box" id="box-resultat-traduction">
+                <div class="translated-text" id="texte-traduit"></div>
+                <button class="btn btn-small btn-primary" id="btn-ecouter-traduction">🔊 Écouter</button>
+            </div>
+            <div class="text-center text-small">⚡ API MyMemory · connexion requise</div>
+        </div>
+
+        <!-- ========== PAGE 3 : FLASHCARDS ========== -->
+        <div class="page" id="page-flashcards">
+            <select id="lang-select-flashcards" style="width:100%;padding:10px 12px;border-radius:30px;border:1px solid #e2e0f0;font-size:0.85rem;background:white;cursor:pointer;outline:none;"></select>
+            <div class="flashcard" id="flashcard">
+                <div class="flashcard-inner">
+                    <div class="flashcard-front">
+                        <div class="flashcard-word" id="flashcard-question">—</div>
+                        <div class="flashcard-hint">👆 Appuyez pour révéler</div>
+                    </div>
+                    <div class="flashcard-back">
+                        <div class="flashcard-word" id="flashcard-answer">—</div>
+                        <div class="flashcard-hint">✅ Vous le saviez ?</div>
+                    </div>
+                </div>
+            </div>
+            <div class="flashcard-controls">
+                <button class="btn btn-dont-know" id="btn-dont-know">😕 Pas su</button>
+                <button class="btn btn-know" id="btn-know">✅ Je sais</button>
+            </div>
+            <div class="flashcard-counter" id="flashcard-counter">Carte 1 / 6</div>
+            <button class="btn btn-outline" id="btn-next-flashcard">➡️ Carte suivante</button>
+        </div>
+
+    </div>
+
+    <!-- NAVIGATION -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" data-page="prononciation">
+            <span class="nav-icon">🎙️</span> Prononcer
+        </button>
+        <button class="nav-item" data-page="traduction">
+            <span class="nav-icon">✍️</span> Traduire
+        </button>
+        <button class="nav-item" data-page="flashcards">
+            <span class="nav-icon">📚</span> Réviser
+        </button>
+    </nav>
 </div>
 
 <script>
-    // ============================================
-    // BASE DE DONNÉES DE PHRASES (illimitée)
-    // ============================================
-    
-    const PHRASES_DB = {
-        "en-US": {
-            "debutant": [
-                { fr: "Bonjour", target: "Hello" },
-                { fr: "Comment ça va ?", target: "How are you?" },
-                { fr: "Je m'appelle...", target: "My name is..." },
-                { fr: "Merci", target: "Thank you" },
-                { fr: "S'il vous plaît", target: "Please" },
-                { fr: "Oui", target: "Yes" },
-                { fr: "Non", target: "No" },
-                { fr: "Je suis heureux", target: "I am happy" },
-                { fr: "Quel âge as-tu ?", target: "How old are you?" },
-                { fr: "Je viens de France", target: "I come from France" }
-            ],
-            "intermediaire": [
-                { fr: "Pourriez-vous m'aider ?", target: "Could you help me?" },
-                { fr: "Je voudrais réserver une table", target: "I would like to book a table" },
-                { fr: "À quelle heure ouvre le musée ?", target: "What time does the museum open?" },
-                { fr: "Je cherche un bon restaurant", target: "I'm looking for a good restaurant" },
-                { fr: "Combien ça coûte ?", target: "How much does it cost?" },
-                { fr: "Pouvez-vous parler plus lentement ?", target: "Can you speak more slowly?" },
-                { fr: "Je ne comprends pas", target: "I don't understand" },
-                { fr: "Où sont les toilettes ?", target: "Where is the bathroom?" },
-                { fr: "J'ai une réservation", target: "I have a reservation" },
-                { fr: "Quel temps fait-il ?", target: "What's the weather like?" }
-            ],
-            "expert": [
-                { fr: "Je suis ravi de faire votre connaissance", target: "I'm delighted to make your acquaintance" },
-                { fr: "Pourriez-vous me recommander un bon vin ?", target: "Could you recommend a good wine?" },
-                { fr: "Je suis désolé pour le retard", target: "I apologize for the delay" },
-                { fr: "À mon avis, c'est une excellente idée", target: "In my opinion, it's an excellent idea" },
-                { fr: "Je n'aurais pas pu mieux dire", target: "I couldn't have said it better" }
-            ]
-        },
-        "es-ES": {
-            "debutant": [
-                { fr: "Bonjour", target: "Hola" },
-                { fr: "Comment ça va ?", target: "¿Cómo estás?" },
-                { fr: "Merci", target: "Gracias" },
-                { fr: "S'il vous plaît", target: "Por favor" },
-                { fr: "Oui", target: "Sí" },
-                { fr: "Non", target: "No" }
-            ],
-            "intermediaire": [
-                { fr: "Je voudrais un café", target: "Quisiera un café" },
-                { fr: "Où est la gare ?", target: "¿Dónde está la estación?" },
-                { fr: "Combien ça coûte ?", target: "¿Cuánto cuesta?" }
-            ],
-            "expert": [
-                { fr: "Je suis enchanté de vous rencontrer", target: "Encantado de conocerle" },
-                { fr: "Pourriez-vous m'indiquer le chemin ?", target: "¿Podría indicarme el camino?" }
-            ]
-        },
-        "it-IT": {
-            "debutant": [
-                { fr: "Bonjour", target: "Buongiorno" },
-                { fr: "Comment ça va ?", target: "Come stai?" },
-                { fr: "Merci", target: "Grazie" },
-                { fr: "S'il vous plaît", target: "Per favore" }
-            ],
-            "intermediaire": [
-                { fr: "Je voudrais une pizza", target: "Vorrei una pizza" },
-                { fr: "Où est l'hôtel ?", target: "Dov'è l'hotel?" }
-            ],
-            "expert": [
-                { fr: "Je suis ravi de faire votre connaissance", target: "Sono lieto di fare la tua conoscenza" }
-            ]
-        },
-        "de-DE": {
-            "debutant": [
-                { fr: "Bonjour", target: "Guten Tag" },
-                { fr: "Comment ça va ?", target: "Wie geht es dir?" },
-                { fr: "Merci", target: "Danke" }
-            ],
-            "intermediaire": [
-                { fr: "Je voudrais de l'eau", target: "Ich hätte gerne Wasser" },
-                { fr: "Parlez-vous anglais ?", target: "Sprechen Sie Englisch?" }
-            ],
-            "expert": [
-                { fr: "Je suis heureux de vous rencontrer", target: "Ich freue mich, Sie kennenzulernen" }
-            ]
-        }
-    };
-    
-    // Ajouter des phrases par défaut pour les langues sans assez de données
-    function getPhrasesForLanguage(lang, level) {
-        const langData = PHRASES_DB[lang];
-        if (!langData) {
-            // Fallback anglais
-            return PHRASES_DB["en-US"][level] || PHRASES_DB["en-US"]["intermediaire"];
-        }
-        const levelData = langData[level];
-        if (!levelData || levelData.length === 0) {
-            // Fallback débutant si le niveau n'existe pas
-            return langData["debutant"] || PHRASES_DB["en-US"]["debutant"];
-        }
-        return levelData;
-    }
-    
-    let phraseActuelle = { fr: "", target: "" };
-    let score = 0;
-    let currentPhraseIndex = 0;
-    let currentPhrasesList = [];
-    
-    const resDiv = document.getElementById('result');
-    const selectLang = document.getElementById('lang-select');
-    const selectLevel = document.getElementById('level-select');
-    const scoreDisplay = document.getElementById('score');
-    const displayFr = document.getElementById('display-fr');
-    const displayTarget = document.getElementById('display-target');
+// ==================== NAVIGATION ====================
+const navItems = document.querySelectorAll('.nav-item');
+const pages = document.querySelectorAll('.page');
+navItems.forEach(item => {
+    item.addEventListener('click', () => {
+        navItems.forEach(n => n.classList.remove('active'));
+        item.classList.add('active');
+        pages.forEach(p => p.classList.remove('active'));
+        document.getElementById(`page-${item.dataset.page}`).classList.add('active');
+        document.getElementById('app-content').scrollTop = 0;
+    });
+});
 
-    function cleanText(text) {
-        return text.toLowerCase().trim().replace(/[?.!,;:""''()]/g, '').replace(/\s+/g, ' ');
-    }
-
-    function calculateSimilarity(userText, targetText) {
-        const userWords = cleanText(userText).split(' ');
-        const targetWords = cleanText(targetText).split(' ');
-        
-        let matches = 0;
-        for (let word of userWords) {
-            if (targetWords.includes(word) && word.length > 2) {
-                matches++;
-            }
-        }
-        
-        const ratio = targetWords.length > 0 ? matches / targetWords.length : 0;
-        return ratio > 0.5;
-    }
-    
-    function updatePhrasesList() {
-        const lang = selectLang.value;
-        const level = selectLevel.value;
-        currentPhrasesList = getPhrasesForLanguage(lang, level);
-        
-        // Mélanger les phrases pour plus de variété
-        for (let i = currentPhrasesList.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [currentPhrasesList[i], currentPhrasesList[j]] = [currentPhrasesList[j], currentPhrasesList[i]];
-        }
-        
-        currentPhraseIndex = 0;
-        console.log(`📚 Chargé ${currentPhrasesList.length} phrases pour ${lang} niveau ${level}`);
-        return currentPhrasesList.length > 0;
-    }
-    
-    function afficherPhraseSuivante() {
-        if (currentPhrasesList.length === 0) {
-            if (!updatePhrasesList()) {
-                displayFr.innerText = "❌ Aucune phrase disponible";
-                displayTarget.innerText = "---";
-                return false;
-            }
-        }
-        
-        if (currentPhraseIndex >= currentPhrasesList.length) {
-            // On a fait le tour, on recharge et mélange
-            updatePhrasesList();
-        }
-        
-        phraseActuelle = currentPhrasesList[currentPhraseIndex];
-        displayFr.innerText = phraseActuelle.fr;
-        displayTarget.innerText = phraseActuelle.target;
-        resDiv.innerHTML = "";
-        
-        console.log(`🔄 Phrase ${currentPhraseIndex + 1}/${currentPhrasesList.length}: ${phraseActuelle.target}`);
-        
-        currentPhraseIndex++;
-        return true;
-    }
-    
-    async function genererNouvellePhrase() {
-        // Version simple avec les phrases intégrées
-        afficherPhraseSuivante();
-        
-        // Envoi à Google Analytics
-        if (typeof gtag !== 'undefined') {
-            gtag('event', 'phrase_generated', {
-                'language': selectLang.value,
-                'level': selectLevel.value
-            });
-        }
-    }
-
-    document.getElementById('btn-listen').onclick = () => {
-        if (!phraseActuelle.target) return;
-        window.speechSynthesis.cancel();
-        let utterance = new SpeechSynthesisUtterance(phraseActuelle.target);
-        utterance.lang = selectLang.value;
-        utterance.rate = 0.9;
-        window.speechSynthesis.speak(utterance);
-        
-        if (typeof gtag !== 'undefined') {
-            gtag('event', 'listen', { 'language': selectLang.value });
-        }
-    };
-
-    document.getElementById('btn-mic').onclick = () => {
-        if (!phraseActuelle.target) {
-            resDiv.innerHTML = "<span class='error'>Chargement...</span>";
-            return;
-        }
-        
-        const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!Recognition) {
-            resDiv.innerHTML = "<span class='error'>❌ Micro non supporté</span>";
-            return;
-        }
-        
-        const recognizer = new Recognition();
-        recognizer.lang = selectLang.value;
-        recognizer.interimResults = false;
-        
-        resDiv.innerHTML = '<span class="loading">🎤 Parle maintenant...</span>';
-        
-        recognizer.onresult = (event) => {
-            const spoken = event.results[0][0].transcript;
-            const target = phraseActuelle.target;
-            
-            const isCorrect = calculateSimilarity(spoken, target);
-            
-            if (isCorrect) {
-                score += 10;
-                scoreDisplay.innerText = score;
-                resDiv.innerHTML = `<span class='success'>🎉 BRAVO ! +10 points (Total: ${score} pts)</span>`;
-                
-                if (typeof gtag !== 'undefined') {
-                    gtag('event', 'correct_answer', {
-                        'language': selectLang.value,
-                        'score': score
-                    });
-                }
-                
-                // Change automatiquement de phrase après une bonne réponse
-                setTimeout(() => genererNouvellePhrase(), 1500);
-            } else {
-                resDiv.innerHTML = `<span class='error'>📝 Tu as dit : "${spoken}"<br>💡 Attendu : "${target}"</span>`;
-                
-                if (typeof gtag !== 'undefined') {
-                    gtag('event', 'wrong_answer', { 'language': selectLang.value });
-                }
-            }
-        };
-        
-        recognizer.onerror = (event) => {
-            resDiv.innerHTML = `<span class='error'>❌ Erreur micro : ${event.error}</span>`;
-        };
-        
-        recognizer.start();
-    };
-
-    document.getElementById('btn-skip').onclick = () => {
-        genererNouvellePhrase();
-        if (typeof gtag !== 'undefined') {
-            gtag('event', 'skip_phrase');
-        }
-    };
-    
-    selectLang.onchange = () => {
-        updatePhrasesList();
-        genererNouvellePhrase();
-        if (typeof gtag !== 'undefined') {
-            gtag('event', 'language_changed', { 'language': selectLang.value });
-        }
-    };
-    
-    selectLevel.onchange = () => {
-        updatePhrasesList();
-        genererNouvellePhrase();
-        if (typeof gtag !== 'undefined') {
-            gtag('event', 'level_changed', { 'level': selectLevel.value });
-        }
-    };
-    
-    // Démarrer
-    window.onload = () => {
-        updatePhrasesList();
-        genererNouvellePhrase();
-    };
-</script>
-</body>
-</html>
+// ==================== GÉNÉRATEUR PROCÉDURAL INFINI ====================
+const generateur = {
+    "es-ES": {
+        sujets: ["El hombre", "La mujer", "Mi amigo", "El vendedor", "La tienda", "El cliente", "La profesora", "El médico", "Mi hermana", "El jefe", "La secretaria", "El turista", "La niña", "El anciano", "Mi vecino"],
+        verbes: ["quiere", "necesita", "busca", "compra", "vende", "tiene", "pide", "ofrece", "prepara", "explica", "muestra", "trae", "lleva", "encuentra", "visita"],
+        complements: ["un café", "ayuda", "el documento", "un regalo", "la casa", "información", "un boleto", "la cuenta", "una mesa", "el coche", "dinero", "un médico", "la dirección", "agua", "comida"],
+        adjectifs: ["bueno", "caro", "barato", "grande", "pequeño", "nuevo", "viejo", "rápido", "bonito", "importante"],
+        connecteurs: ["y", "pero"
