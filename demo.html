@@ -2,81 +2,570 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ULCY AI - WiseEmpire</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>ULCY AI Pro</title>
     <style>
-        body { font-family: -apple-system, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f8f9ff; margin: 0; padding: 20px; }
-        .card { width: 100%; max-width: 380px; text-align: center; background: white; border-radius: 36px; padding: 35px 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); position: relative; }
-        .score-box { position: absolute; top: 20px; right: 25px; background: #7b61ff; color: white; padding: 5px 15px; border-radius: 20px; font-weight: 800; font-size: 0.8rem; }
-        .brand { font-weight: 800; font-size: 1.8rem; color: #7b61ff; letter-spacing: 3px; margin-bottom: 5px; }
-        .sub { color: #888; font-size: 0.7rem; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px; }
-        select { width: 100%; padding: 14px; border-radius: 60px; border: 1px solid #eee; margin-bottom: 15px; font-size: 1rem; outline: none; background: #fff; appearance: none; text-align-last: center; }
-        .word-box { background: #f9f8ff; border-radius: 25px; padding: 30px 15px; margin-bottom: 25px; min-height: 110px; display: flex; flex-direction: column; justify-content: center; border: 1px solid #f0f0ff; }
-        #display-fr { font-size: 1.25rem; font-weight: bold; color: #1a1a1a; margin-bottom: 12px; }
-        #display-target { color: #7b61ff; font-weight: 600; font-size: 1.05rem; }
-        .btn { width: 100%; padding: 16px; border-radius: 60px; border: none; font-weight: bold; cursor: pointer; margin-bottom: 12px; transition: 0.3s; font-size: 0.95rem; }
-        .btn-speak { background: #7b61ff; color: white; box-shadow: 0 4px 15px rgba(123,97,255,0.3); }
-        .btn-listen { background: #f0f0ff; color: #7b61ff; }
-        .btn-skip { background: transparent; color: #bbb; text-decoration: underline; font-size: 0.8rem; margin-top: 5px; cursor: pointer; border: none; }
-        #result { min-height: 45px; margin-top: 15px; font-weight: bold; }
-        .success { color: #27ae60; background: #eafaf1; padding: 8px 15px; border-radius: 50px; }
-        .error { color: #e74c3c; font-size: 0.85rem; }
-        footer { margin-top: 25px; font-size: 0.85rem; color: #bbb; }
-        .wise { color: #7b61ff; font-weight: 800; }
+        :root {
+            --primary: #7b61ff; --primary-light: #a28eff; --bg: #f8f7ff;
+            --card: #ffffff; --text: #1e1a3c; --text-light: #7b7c9e;
+            --success: #0f7b3a; --error: #bc3f2e; --warning: #e67e22;
+            --border: #e8e5f7; --shadow: 0 8px 30px rgba(100,80,200,0.08);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg); min-height: 100vh; display: flex;
+            justify-content: center; align-items: center; padding: 16px;
+            -webkit-tap-highlight-color: transparent; user-select: none;
+        }
+        .app-container {
+            width: 100%; max-width: 420px; height: 92vh; max-height: 820px;
+            background: var(--card); border-radius: 32px; box-shadow: var(--shadow);
+            display: flex; flex-direction: column; overflow: hidden; position: relative;
+        }
+        .app-header { padding: 18px 24px 10px; text-align: center; flex-shrink: 0; }
+        .brand {
+            font-weight: 800; font-size: 1.5rem; letter-spacing: 3px;
+            background: linear-gradient(135deg, #7b61ff, #9b7eff);
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+        }
+        .sub { color: var(--text-light); font-size: 0.68rem; letter-spacing: 1.5px; margin-top: 2px; }
+        .app-content { flex: 1; overflow-y: auto; padding: 6px 18px 12px; -webkit-overflow-scrolling: touch; }
+        .page { display: none; flex-direction: column; gap: 14px; }
+        .page.active { display: flex; }
+        .word-box {
+            background: #f9f8ff; border-radius: 22px; padding: 22px 16px; text-align: center;
+            box-shadow: inset 0 1px 2px #ffffff80, 0 2px 8px rgba(0,0,0,0.03);
+            min-height: 100px; display: flex; flex-direction: column; justify-content: center; position: relative;
+        }
+        .word-box .fr { font-size: 1.15rem; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+        .word-box .target {
+            font-size: 1.05rem; color: var(--primary); font-weight: 500;
+            background: #ffffffcc; display: inline-block; padding: 5px 14px; border-radius: 40px;
+        }
+        .word-box .mode-badge {
+            position: absolute; top: -10px; right: 16px; color: white;
+            font-size: 0.65rem; padding: 4px 10px; border-radius: 20px; font-weight: 600;
+        }
+        .word-box .mode-badge.essentials { background: #f59e0b; }
+        .word-box .mode-badge.infinite { background: #10b981; }
+        .btn {
+            width: 100%; padding: 14px 18px; border: none; border-radius: 50px;
+            font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 6px 18px rgba(123,97,255,0.3); }
+        .btn-secondary { background: #f4f2ff; color: var(--primary); border: 1px solid #e5dfff; }
+        .btn-outline { background: white; color: var(--primary); border: 1.5px solid var(--primary); }
+        .btn-small { width: auto; padding: 8px 16px; font-size: 0.75rem; border-radius: 30px; }
+        .mode-toggle { display: flex; background: #f4f2ff; border-radius: 40px; padding: 4px; gap: 4px; }
+        .mode-toggle button {
+            flex: 1; padding: 10px 12px; border: none; border-radius: 40px;
+            font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: 0.2s;
+            background: transparent; color: #b0adc5;
+        }
+        .mode-toggle button.active { background: white; color: var(--primary); box-shadow: 0 2px 8px rgba(123,97,255,0.15); }
+        .difficulty-row {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 0.75rem; color: var(--text-light); padding: 0 4px;
+        }
+        .difficulty-row input[type=range] {
+            flex: 1; -webkit-appearance: none; height: 6px;
+            background: #e8e5f7; border-radius: 10px; outline: none;
+        }
+        .difficulty-row input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 22px; height: 22px;
+            background: var(--primary); border-radius: 50%; cursor: pointer;
+            box-shadow: 0 2px 8px rgba(123,97,255,0.3);
+        }
+        #result-prononciation {
+            text-align: center; font-weight: 500; font-size: 0.82rem;
+            padding: 10px 14px; border-radius: 30px; min-height: 40px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .success-badge {
+            color: var(--success); background: #e2f7ea; padding: 8px 16px;
+            border-radius: 40px; font-weight: 600; animation: popIn 0.3s ease;
+        }
+        .error-badge {
+            color: var(--error); background: #ffe8e5; padding: 8px 16px;
+            border-radius: 40px; font-weight: 500; font-size: 0.78rem; line-height: 1.4;
+        }
+        .mic-loading { animation: pulse 0.8s infinite; background: #a18eff !important; color: white !important; }
+        .counter-row {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.7rem; color: var(--text-light);
+        }
+        .counter-row span { background: #f9f8ff; padding: 4px 12px; border-radius: 20px; }
+        .lang-select-row { display: flex; gap: 8px; align-items: center; }
+        .lang-select-row select {
+            flex: 1; padding: 10px 12px; border-radius: 30px;
+            border: 1px solid var(--border); font-size: 0.82rem; background: white; cursor: pointer; outline: none;
+        }
+        .translation-input {
+            width: 100%; min-height: 80px; padding: 14px; border-radius: 18px;
+            border: 1.5px solid var(--border); font-size: 0.95rem; font-family: inherit;
+            resize: vertical; background: #fdfcff; outline: none;
+        }
+        .translation-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(123,97,255,0.1); }
+        .translation-result-box {
+            background: #f9f8ff; border-radius: 18px; padding: 16px;
+            text-align: center; display: none; animation: fadeSlideIn 0.35s ease;
+        }
+        .translation-result-box.show { display: block; }
+        .translated-text { font-size: 1.1rem; font-weight: 600; color: var(--text); margin-bottom: 10px; }
+        .flashcard { perspective: 800px; width: 100%; height: 200px; cursor: pointer; margin: 4px 0; }
+        .flashcard-inner {
+            width: 100%; height: 100%; position: relative;
+            transition: transform 0.5s; transform-style: preserve-3d;
+        }
+        .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+        .flashcard-front, .flashcard-back {
+            position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
+            border-radius: 22px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; padding: 20px; text-align: center;
+        }
+        .flashcard-front { background: linear-gradient(145deg, #f9f8ff, #f0edff); border: 1px solid #e5dfff; }
+        .flashcard-back { background: linear-gradient(145deg, #f0fff4, #e2f7ea); border: 1px solid #c8e6d0; transform: rotateY(180deg); }
+        .flashcard-word { font-size: 1.6rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+        .flashcard-hint { font-size: 0.72rem; color: var(--text-light); }
+        .flashcard-controls { display: flex; gap: 10px; }
+        .flashcard-controls .btn { flex: 1; padding: 10px; font-size: 0.8rem; }
+        .btn-know { background: #e2f7ea; color: var(--success); }
+        .btn-dont-know { background: #ffe8e5; color: var(--error); }
+        .flashcard-counter { text-align: center; font-size: 0.75rem; color: var(--text-light); }
+        .bottom-nav {
+            display: flex; justify-content: space-around; align-items: center;
+            padding: 6px 10px 14px; background: white; border-top: 1px solid #f0edf7; flex-shrink: 0;
+        }
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center; gap: 3px;
+            padding: 6px 10px; border-radius: 14px; cursor: pointer; border: none;
+            background: transparent; font-family: inherit; font-size: 0.65rem;
+            color: #b0adc5; font-weight: 500; min-width: 55px; transition: 0.2s;
+        }
+        .nav-item .nav-icon { font-size: 1.3rem; transition: 0.2s; }
+        .nav-item.active { color: var(--primary); background: #f4f2ff; }
+        .nav-item.active .nav-icon { transform: translateY(-2px); }
+        @keyframes pulse { 0%{opacity:1;}50%{opacity:0.6;}100%{opacity:1;} }
+        @keyframes popIn { 0%{transform:scale(0.8);opacity:0;}100%{transform:scale(1);opacity:1;} }
+        @keyframes fadeSlideIn { 0%{opacity:0;transform:translateY(10px);}100%{opacity:1;transform:translateY(0);} }
+        .app-content::-webkit-scrollbar { width: 3px; }
+        .app-content::-webkit-scrollbar-thumb { background: #e0dbf5; border-radius: 10px; }
+        .text-center { text-align: center; }
+        .text-small { font-size: 0.7rem; color: var(--text-light); }
     </style>
 </head>
 <body>
+<div class="app-container">
+    <div class="app-header"><div class="brand">ULCY AI</div><div class="sub">apprends • prononce • traduis • ∞</div></div>
+    <div class="app-content" id="app-content">
 
-<div class="card">
-    <div class="score-box">SCORE: <span id="score">0</span></div>
-    <div class="brand">ULCY AI</div>
-    <div class="sub">Omni Learning Engine</div>
-    
-    <select id="lang-select">
-        <option value="en-US">🇺🇸 Anglais</option>
-        <option value="pt-PT">🇵🇹 Portugais (Portugal)</option>
-        <option value="pt-BR">🇧🇷 Portugais (Brésil)</option>
-        <option value="it-IT">🇮🇹 Italien</option>
-        <option value="es-ES">🇪🇸 Espagnol</option>
-        <option value="ru-RU">🇷🇺 Russe</option>
-        <option value="de-DE">🇩🇪 Allemand</option>
-        <option value="zh-CN">🇨🇳 Chinois</option>
-    </select>
+        <div class="page active" id="page-prononciation">
+            <div class="mode-toggle" id="mode-toggle-prononciation">
+                <button class="active" data-mode="essentials">📋 Essentiel</button>
+                <button data-mode="infinite">♾️ Infini</button>
+            </div>
+            <select id="lang-select-prononciation" style="width:100%;padding:10px 12px;border-radius:30px;border:1px solid #e2e0f0;font-size:0.85rem;background:white;cursor:pointer;outline:none;"></select>
+            <div class="difficulty-row" id="difficulty-row-prononciation">
+                <span>🌱 Court</span><input type="range" id="difficulty-prononciation" min="1" max="3" value="1" step="1"><span>🌳 Long</span>
+            </div>
+            <div class="word-box" id="word-box-prononciation">
+                <span class="mode-badge essentials" id="mode-badge-prononciation">Essentiel</span>
+                <div class="fr" id="display-fr">✨ Prêt à apprendre ✨</div>
+                <div class="target" id="display-target">—</div>
+            </div>
+            <div class="counter-row">
+                <span id="counter-phrases-vues">📖 0 phrases vues</span>
+                <span id="counter-phrases-reussies">✅ 0 réussies</span>
+            </div>
+            <button class="btn btn-secondary" id="btn-listen">🔊 ÉCOUTER LA PHRASE</button>
+            <button class="btn btn-primary" id="btn-mic">🎙️ PARLER & VÉRIFIER</button>
+            <div id="result-prononciation"></div>
+        </div>
 
-    <select id="level-select">
-        <option value="débutant">Niveau : Débutant</option>
-        <option value="intermédiaire">Niveau : Moyen</option>
-        <option value="expert">Niveau : Expert</option>
-    </select>
+        <div class="page" id="page-traduction">
+            <div class="lang-select-row">
+                <select id="lang-source"><option value="fr">🇫🇷 Français</option><option value="en">🇬🇧 Anglais</option><option value="es">🇪🇸 Espagnol</option><option value="de">🇩🇪 Allemand</option><option value="pt">🇵🇹 Portugais</option><option value="it">🇮🇹 Italien</option></select>
+                <span style="font-size:1.2rem;color:var(--primary);">→</span>
+                <select id="lang-cible"><option value="en">🇬🇧 Anglais</option><option value="es">🇪🇸 Espagnol</option><option value="de">🇩🇪 Allemand</option><option value="pt">🇵🇹 Portugais</option><option value="it">🇮🇹 Italien</option><option value="fr">🇫🇷 Français</option></select>
+            </div>
+            <textarea class="translation-input" id="texte-a-traduire" placeholder="Tapez votre texte ici..."></textarea>
+            <button class="btn btn-primary" id="btn-traduire">🌐 TRADUIRE</button>
+            <div class="translation-result-box" id="box-resultat-traduction">
+                <div class="translated-text" id="texte-traduit"></div>
+                <button class="btn btn-small btn-primary" id="btn-ecouter-traduction">🔊 Écouter</button>
+            </div>
+            <div class="text-center text-small">⚡ API MyMemory · connexion requise</div>
+        </div>
 
-    <div class="word-box">
-        <div id="display-fr">Prêt pour l'entraînement ?</div>
-        <div id="display-target">---</div>
+        <div class="page" id="page-flashcards">
+            <select id="lang-select-flashcards" style="width:100%;padding:10px 12px;border-radius:30px;border:1px solid #e2e0f0;font-size:0.85rem;background:white;cursor:pointer;outline:none;"></select>
+            <div class="flashcard" id="flashcard">
+                <div class="flashcard-inner">
+                    <div class="flashcard-front"><div class="flashcard-word" id="flashcard-question">—</div><div class="flashcard-hint">👆 Appuyez pour révéler</div></div>
+                    <div class="flashcard-back"><div class="flashcard-word" id="flashcard-answer">—</div><div class="flashcard-hint">✅ Vous le saviez ?</div></div>
+                </div>
+            </div>
+            <div class="flashcard-controls">
+                <button class="btn btn-dont-know" id="btn-dont-know">😕 Pas su</button>
+                <button class="btn btn-know" id="btn-know">✅ Je sais</button>
+            </div>
+            <div class="flashcard-counter" id="flashcard-counter">Carte 1 / 6</div>
+            <button class="btn btn-outline" id="btn-next-flashcard">➡️ Carte suivante</button>
+        </div>
+
     </div>
-    
-    <button class="btn btn-listen" id="btn-listen">🔊 ÉCOUTER LE MODÈLE</button>
-    <button class="btn btn-speak" id="btn-mic">🎙️ PARLER & VÉRIFIER</button>
-    <button class="btn-skip" id="btn-skip">Passer cette phrase</button>
-    
-    <div id="result"></div>
-    <footer>Propulsé par <span class="wise">WISEEMPIRE</span></footer>
+    <nav class="bottom-nav">
+        <button class="nav-item active" data-page="prononciation"><span class="nav-icon">🎙️</span> Prononcer</button>
+        <button class="nav-item" data-page="traduction"><span class="nav-icon">✍️</span> Traduire</button>
+        <button class="nav-item" data-page="flashcards"><span class="nav-icon">📚</span> Réviser</button>
+    </nav>
 </div>
-
 <script>
-    // CAMOUFLAGE : On sépare la clé en 3 morceaux pour tromper les robots de GitHub
-    const a = "AIzaSyBTZ";
-    const b = "JYhNVM6f7zN8";
-    const c = "4odj-5Wx74Nied59Fw";
-    const API_KEY = a + b + c;
+// ==================== NAVIGATION ====================
+const navItems = document.querySelectorAll('.nav-item');
+const pages = document.querySelectorAll('.page');
+navItems.forEach(item => {
+    item.addEventListener('click', () => {
+        navItems.forEach(n => n.classList.remove('active'));
+        item.classList.add('active');
+        pages.forEach(p => p.classList.remove('active'));
+        document.getElementById(`page-${item.dataset.page}`).classList.add('active');
+        document.getElementById('app-content').scrollTop = 0;
+    });
+});
 
-    let phraseActuelle = { t: "", fr: "" };
-    let score = 0;
-    const resDiv = document.getElementById('result');
-    const selectLang = document.getElementById('lang-select');
-    const selectLevel = document.getElementById('level-select');
-    const scoreDisplay = document.getElementById('score');
+// ==================== GÉNÉRATEUR PROCÉDURAL INFINI ====================
+const generateur = {
+    "es-ES": {
+        sujets: ["El hombre","La mujer","Mi amigo","El vendedor","La tienda","El cliente","La profesora","El médico","Mi hermana","El jefe","La secretaria","El turista","La niña","El anciano","Mi vecino"],
+        verbes: ["quiere","necesita","busca","compra","vende","tiene","pide","ofrece","prepara","explica","muestra","trae","lleva","encuentra","visita"],
+        complements: ["un café","ayuda","el documento","un regalo","la casa","información","un boleto","la cuenta","una mesa","el coche","dinero","un médico","la dirección","agua","comida"],
+        adjectifs: ["bueno","caro","barato","grande","pequeño","nuevo","viejo","rápido","bonito","importante"],
+        connecteurs: ["y","pero","porque","o","también"]
+    },
+    "pt-PT": {
+        sujets: ["O homem","A mulher","O meu amigo","O vendedor","A loja","O cliente","A professora","O médico","A minha irmã","O chefe"],
+        verbes: ["quer","precisa","procura","compra","vende","tem","pede","oferece","prepara","explica"],
+        complements: ["um café","ajuda","o documento","um presente","a casa","informação","um bilhete","a conta","uma mesa","o carro"],
+        adjectifs: ["bom","caro","barato","grande","pequeno","novo","velho","rápido","bonito","importante"],
+        connecteurs: ["e","mas","porque","ou","também"]
+    },
+    "de-DE": {
+        sujets: ["Der Mann","Die Frau","Mein Freund","Der Verkäufer","Der Laden","Der Kunde","Die Lehrerin","Der Arzt","Meine Schwester","Der Chef"],
+        verbes: ["möchte","braucht","sucht","kauft","verkauft","hat","bestellt","bietet","macht","erklärt"],
+        complements: ["einen Kaffee","Hilfe","das Dokument","ein Geschenk","das Haus","Informationen","eine Fahrkarte","die Rechnung","einen Tisch","das Auto"],
+        adjectifs: ["gut","teuer","billig","groß","klein","neu","alt","schnell","schön","wichtig"],
+        connecteurs: ["und","aber","weil","oder","auch"]
+    },
+    "it-IT": {
+        sujets: ["L'uomo","La donna","Il mio amico","Il venditore","Il negozio","Il cliente","La professoressa","Il medico","Mia sorella","Il capo"],
+        verbes: ["vuole","ha bisogno","cerca","compra","vende","ha","chiede","offre","prepara","spiega"],
+        complements: ["un caffè","aiuto","il documento","un regalo","la casa","informazioni","un biglietto","il conto","un tavolo","la macchina"],
+        adjectifs: ["buono","caro","economico","grande","piccolo","nuovo","vecchio","veloce","bello","importante"],
+        connecteurs: ["e","ma","perché","o","anche"]
+    }
+};
 
-    async function genererPhraseIA() {
-        document.getElementById('display-fr').innerText = "Génération...";
-        document.getElementById('display-
-                                
+function getGenerateurForLangue(langue) { return generateur[langue] || generateur["es-ES"]; }
+
+const dicoSujets = {
+    "El hombre":"L'homme","La mujer":"La femme","Mi amigo":"Mon ami","El vendedor":"Le vendeur",
+    "La tienda":"Le magasin","El cliente":"Le client","La profesora":"La professeure","El médico":"Le médecin",
+    "Mi hermana":"Ma sœur","El jefe":"Le chef","La secretaria":"La secrétaire","El turista":"Le touriste",
+    "La niña":"La fille","El anciano":"La personne âgée","Mi vecino":"Mon voisin",
+    "O homem":"L'homme","A mulher":"La femme","O meu amigo":"Mon ami","O vendedor":"Le vendeur",
+    "A loja":"Le magasin","O cliente":"Le client","A professora":"La professeure","O médico":"Le médecin",
+    "A minha irmã":"Ma sœur","O chefe":"Le chef",
+    "Der Mann":"L'homme","Die Frau":"La femme","Mein Freund":"Mon ami","Der Verkäufer":"Le vendeur",
+    "Der Laden":"Le magasin","Der Kunde":"Le client","Die Lehrerin":"La professeure","Der Arzt":"Le médecin",
+    "Meine Schwester":"Ma sœur","Der Chef":"Le chef",
+    "L'uomo":"L'homme","La donna":"La femme","Il mio amico":"Mon ami","Il venditore":"Le vendeur",
+    "Il negozio":"Le magasin","Il cliente":"Le client","La professoressa":"La professeure","Il medico":"Le médecin",
+    "Mia sorella":"Ma sœur","Il capo":"Le chef"
+};
+const dicoVerbes = {
+    "quiere":"veut","necesita":"a besoin de","busca":"cherche","compra":"achète","vende":"vend",
+    "tiene":"a","pide":"demande","ofrece":"offre","prepara":"prépare","explica":"explique",
+    "muestra":"montre","trae":"apporte","lleva":"porte","encuentra":"trouve","visita":"visite",
+    "quer":"veut","precisa":"a besoin de","procura":"cherche","oferece":"offre","pede":"demande",
+    "möchte":"veut","braucht":"a besoin de","sucht":"cherche","kauft":"achète","verkauft":"vend",
+    "hat":"a","bestellt":"commande","bietet":"offre","macht":"fait","erklärt":"explique",
+    "vuole":"veut","ha bisogno":"a besoin de","cerca":"cherche","chiede":"demande","ha":"a"
+};
+const dicoComplements = {
+    "un café":"un café","ayuda":"de l'aide","el documento":"le document","un regalo":"un cadeau",
+    "la casa":"la maison","información":"des informations","un boleto":"un billet","la cuenta":"l'addition",
+    "una mesa":"une table","el coche":"la voiture","dinero":"de l'argent","un médico":"un médecin",
+    "la dirección":"l'adresse","agua":"de l'eau","comida":"de la nourriture",
+    "um café":"un café","ajuda":"de l'aide","o documento":"le document","um presente":"un cadeau",
+    "informação":"des informations","um bilhete":"un billet","a conta":"l'addition",
+    "uma mesa":"une table","o carro":"la voiture",
+    "einen Kaffee":"un café","Hilfe":"de l'aide","das Dokument":"le document","ein Geschenk":"un cadeau",
+    "das Haus":"la maison","Informationen":"des informations","eine Fahrkarte":"un billet",
+    "die Rechnung":"l'addition","einen Tisch":"une table","das Auto":"la voiture",
+    "un caffè":"un café","aiuto":"de l'aide","il documento":"le document","un regalo":"un cadeau",
+    "la casa":"la maison","informazioni":"des informations","un biglietto":"un billet",
+    "il conto":"l'addition","un tavolo":"une table","la macchina":"la voiture"
+};
+const dicoAdjectifs = {
+    "bueno":"bon","caro":"cher","barato":"pas cher","grande":"grand","pequeño":"petit",
+    "nuevo":"nouveau","viejo":"vieux","rápido":"rapide","bonito":"joli","importante":"important",
+    "bom":"bon","gut":"bon","teuer":"cher","billig":"pas cher","groß":"grand","klein":"petit",
+    "neu":"nouveau","alt":"vieux","schnell":"rapide","schön":"joli","wichtig":"important",
+    "buono":"bon","caro":"cher","economico":"pas cher","grande":"grand","piccolo":"petit",
+    "nuovo":"nouveau","vecchio":"vieux","veloce":"rapide","bello":"joli","importante":"important"
+};
+const dicoConnecteurs = {
+    "y":"et","pero":"mais","porque":"parce que","o":"ou","también":"aussi",
+    "e":"et","mas":"mais","ou":"ou","também":"aussi",
+    "und":"et","aber":"mais","weil":"parce que","oder":"ou","auch":"aussi",
+    "ma":"mais","perché":"parce que","anche":"aussi"
+};
+
+function genererPhraseInfinie(langue, difficulte) {
+    const gen = getGenerateurForLangue(langue);
+    const s = gen.sujets[Math.floor(Math.random()*gen.sujets.length)];
+    const v = gen.verbes[Math.floor(Math.random()*gen.verbes.length)];
+    const c = gen.complements[Math.floor(Math.random()*gen.complements.length)];
+    let tc = "", fr = "";
+    if(difficulte===1){
+        tc = s+" "+v+" "+c+".";
+        fr = (dicoSujets[s]||s)+" "+(dicoVerbes[v]||v)+" "+(dicoComplements[c]||c)+".";
+    } else if(difficulte===2){
+        const a = gen.adjectifs[Math.floor(Math.random()*gen.adjectifs.length)];
+        tc = s+" "+v+" un "+a+" "+c+".";
+        fr = (dicoSujets[s]||s)+" "+(dicoVerbes[v]||v)+" un "+(dicoAdjectifs[a]||a)+" "+(dicoComplements[c]||c)+".";
+    } else {
+        const s2 = gen.sujets[Math.floor(Math.random()*gen.sujets.length)];
+        const v2 = gen.verbes[Math.floor(Math.random()*gen.verbes.length)];
+        const c2 = gen.complements[Math.floor(Math.random()*gen.complements.length)];
+        const co = gen.connecteurs[Math.floor(Math.random()*gen.connecteurs.length)];
+        tc = s+" "+v+" "+c+" "+co+" "+s2.toLowerCase()+" "+v2+" "+c2+".";
+        fr = (dicoSujets[s]||s)+" "+(dicoVerbes[v]||v)+" "+(dicoComplements[c]||c)+" "+(dicoConnecteurs[co]||co)+" "+(dicoSujets[s2]||s2).toLowerCase()+" "+(dicoVerbes[v2]||v2)+" "+(dicoComplements[c2]||c2)+".";
+    }
+    return {t:tc, fr:fr};
+}
+
+// ==================== BANQUE PHRASES ESSENTIELLES ====================
+const banquesEssentielles = {
+    "pt-PT":[{"t":"Quanto custa?","fr":"Combien ça coûte ?"},{"t":"É um prazer","fr":"C'est un plaisir"},{"t":"O mercado é grande","fr":"Le marché est grand"},{"t":"Eu confio em você","fr":"Je vous fais confiance"},{"t":"Bom dia","fr":"Bonjour"},{"t":"Obrigado","fr":"Merci"},{"t":"Como está?","fr":"Comment allez-vous ?"},{"t":"Até logo","fr":"À bientôt"},{"t":"Pode ajudar-me?","fr":"Pouvez-vous m'aider ?"},{"t":"Onde fica a estação?","fr":"Où se trouve la gare ?"},{"t":"Quero reservar uma mesa","fr":"Je veux réserver une table"},{"t":"Aceita cartão?","fr":"Acceptez-vous la carte ?"}],
+    "pt-BR":[{"t":"Vamos fechar o negócio","fr":"On va conclure l'affaire"},{"t":"Tudo joia","fr":"Tout va bien"},{"t":"Fique tranquilo","fr":"Reste tranquille"},{"t":"Com certeza","fr":"Avec certitude"},{"t":"Beleza","fr":"Super"},{"t":"Quanto custa isso?","fr":"Combien ça coûte ?"},{"t":"Onde fica o banheiro?","fr":"Où sont les toilettes ?"},{"t":"Meu nome é...","fr":"Je m'appelle..."}],
+    "ru-RU":[{"t":"Привет","fr":"Salut"},{"t":"Я продавец","fr":"Je suis un vendeur"},{"t":"Хорошо","fr":"D'accord"},{"t":"До свидания","fr":"Au revoir"},{"t":"Спасибо","fr":"Merci"},{"t":"Сколько стоит?","fr":"Combien ça coûte ?"},{"t":"Я не понимаю","fr":"Je ne comprends pas"},{"t":"Где туалет?","fr":"Où sont les toilettes ?"}],
+    "de-DE":[{"t":"Guten Tag","fr":"Bonjour"},{"t":"Das ist teuer","fr":"C'est cher"},{"t":"Ich verstehe","fr":"Je comprends"},{"t":"Sehr gut","fr":"Très bien"},{"t":"Auf Wiedersehen","fr":"Au revoir"},{"t":"Danke","fr":"Merci"},{"t":"Wo ist der Bahnhof?","fr":"Où est la gare ?"},{"t":"Ich möchte bezahlen","fr":"Je voudrais payer"},{"t":"Haben Sie eine Karte?","fr":"Avez-vous une carte ?"},{"t":"Es tut mir leid","fr":"Je suis désolé"}],
+    "es-ES":[{"t":"Hola amigo","fr":"Salut l'ami"},{"t":"Es una buena oferta","fr":"C'est une bonne offre"},{"t":"Me gusta mucho","fr":"J'aime beaucoup"},{"t":"¿Dónde está el banco?","fr":"Où est la banque ?"},{"t":"Gracias","fr":"Merci"},{"t":"Buenos días","fr":"Bonjour"},{"t":"¿Cuánto cuesta?","fr":"Combien ça coûte ?"},{"t":"Quisiera reservar","fr":"Je voudrais réserver"},{"t":"No entiendo","fr":"Je ne comprends pas"},{"t":"¿Dónde está el baño?","fr":"Où sont les toilettes ?"},{"t":"La cuenta, por favor","fr":"L'addition svp"},{"t":"Hasta luego","fr":"À plus tard"}],
+    "it-IT":[{"t":"Ciao","fr":"Salut"},{"t":"Bellissimo","fr":"Très beau"},{"t":"Amo il Togo","fr":"J'aime le Togo"},{"t":"Buona fortuna","fr":"Bonne chance"},{"t":"Grazie","fr":"Merci"},{"t":"Buongiorno","fr":"Bonjour"},{"t":"Quanto costa?","fr":"Combien ça coûte ?"},{"t":"Vorrei prenotare","fr":"Je voudrais réserver"},{"t":"Non capisco","fr":"Je ne comprends pas"},{"t":"Dov'è il bagno?","fr":"Où sont les toilettes ?"}],
+    "zh-CN":[{"t":"你好","fr":"Bonjour"},{"t":"谢谢","fr":"Merci"},{"t":"我要买","fr":"Je veux acheter"},{"t":"太贵了","fr":"C'est trop cher"},{"t":"再见","fr":"Au revoir"},{"t":"多少钱","fr":"Combien ça coûte ?"},{"t":"我不明白","fr":"Je ne comprends pas"},{"t":"对不起","fr":"Désolé"}]
+};
+const nomsLangues = {
+    "pt-PT":"🇵🇹 Portugais (Portugal)","pt-BR":"🇧🇷 Portugais (Brésil)","ru-RU":"🇷🇺 Russe",
+    "de-DE":"🇩🇪 Allemand","es-ES":"🇪🇸 Espagnol","it-IT":"🇮🇹 Italien","zh-CN":"🇨🇳 Chinois"
+};
+        </script>
+     <script>
+// ==================== MODE PRONONCIATION ====================
+let phraseActuelle = {t:"",fr:""};
+let syntheseEnCours = false;
+let modeActuel = "essentials";
+let compteurVues = 0;
+let compteurReussies = 0;
+const phrasesDejaVues = new Set();
+
+const selectPrononciation = document.getElementById('lang-select-prononciation');
+const displayFr = document.getElementById('display-fr');
+const displayTarget = document.getElementById('display-target');
+const resultPrononciation = document.getElementById('result-prononciation');
+const btnMic = document.getElementById('btn-mic');
+const btnListen = document.getElementById('btn-listen');
+const modeBadge = document.getElementById('mode-badge-prononciation');
+const difficultyRow = document.getElementById('difficulty-row-prononciation');
+const difficultySlider = document.getElementById('difficulty-prononciation');
+const counterVues = document.getElementById('counter-phrases-vues');
+const counterReussies = document.getElementById('counter-phrases-reussies');
+const modeButtons = document.querySelectorAll('#mode-toggle-prononciation button');
+
+for(let code in banquesEssentielles){ selectPrononciation.add(new Option(nomsLangues[code]||code, code)); }
+
+modeButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        modeButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        modeActuel = btn.dataset.mode;
+        difficultyRow.style.display = modeActuel==='infinite'?'flex':'none';
+        if(modeActuel==='essentials'){ modeBadge.textContent='Essentiel'; modeBadge.className='mode-badge essentials'; }
+        else { modeBadge.textContent='Infini ♾️'; modeBadge.className='mode-badge infinite'; }
+        phrasesDejaVues.clear();
+        nouvellePhrase();
+    });
+});
+difficultyRow.style.display = 'none';
+
+function nouvellePhrase(){
+    const langue = selectPrononciation.value;
+    let candidat = null;
+    if(modeActuel==='essentials'){
+        const banque = banquesEssentielles[langue];
+        candidat = (banque&&banque.length>0)? {...banque[Math.floor(Math.random()*banque.length)]} : genererPhraseInfinie(langue,1);
+    } else {
+        const d = parseInt(difficultySlider.value);
+        let tentatives = 0;
+        do { candidat = genererPhraseInfinie(langue,d); tentatives++; }
+        while(phrasesDejaVues.has(candidat.t) && tentatives<50);
+        if(phrasesDejaVues.has(candidat.t)) phrasesDejaVues.clear();
+        phrasesDejaVues.add(candidat.t);
+    }
+    phraseActuelle = candidat;
+    displayFr.innerText = phraseActuelle.fr;
+    displayTarget.innerText = phraseActuelle.t;
+    resultPrononciation.innerHTML = "";
+    compteurVues++;
+    counterVues.textContent = "📖 "+compteurVues+" phrases vues";
+    counterReussies.textContent = "✅ "+compteurReussies+" réussies";
+}
+
+function ecouterPhrase(){
+    if(!phraseActuelle.t) nouvellePhrase();
+    if(syntheseEnCours){ window.speechSynthesis.cancel(); syntheseEnCours=false; }
+    const u = new SpeechSynthesisUtterance(phraseActuelle.t);
+    u.lang = selectPrononciation.value; u.rate = 0.85; u.pitch = 1.0;
+    u.onstart = ()=>{syntheseEnCours=true;};
+    u.onend = ()=>{syntheseEnCours=false;};
+    u.onerror = ()=>{syntheseEnCours=false;};
+    window.speechSynthesis.speak(u);
+}
+
+function demarrerReconnaissance(){
+    if(!phraseActuelle.t) nouvellePhrase();
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if(!SR){ resultPrononciation.innerHTML="<span class='error-badge'>❌ Non supporté</span>"; return; }
+    const rec = new SR();
+    rec.lang = selectPrononciation.value;
+    rec.interimResults = false;
+    rec.maxAlternatives = 1;
+    const orig = btnMic.innerHTML;
+    btnMic.innerHTML = "🎙️ ÉCOUTE..."; btnMic.disabled = true; btnListen.disabled = true;
+    btnMic.classList.add("mic-loading");
+    resultPrononciation.innerHTML = "<span style='color:#7b61ff;'>🎤 Parlez maintenant...</span>";
+    rec.start();
+    rec.onresult = (e)=>{
+        const parole = e.results[0][0].transcript;
+        const cn = phraseActuelle.t.toLowerCase().replace(/[^\w\s]/g,'').trim();
+        const dn = parole.toLowerCase().replace(/[^\w\s]/g,'').trim();
+        const ok = (cn===dn)||dn.includes(cn)||cn.includes(dn)||similariteSimple(cn,dn)>0.7;
+        if(ok){
+            compteurReussies++;
+            resultPrononciation.innerHTML="<span class='success-badge'>🎉 BRAVO !</span>";
+            counterVues.textContent = "📖 "+compteurVues+" phrases vues";
+            counterReussies.textContent = "✅ "+compteurReussies+" réussies";
+            setTimeout(()=>{nouvellePhrase();resultPrononciation.innerHTML="";},1800);
+        } else {
+            resultPrononciation.innerHTML="<span class='error-badge'>✖️ Dit : \""+parole+"\"<br>Attendu : \""+phraseActuelle.t+"\"</span>";
+        }
+        reset();
+    };
+    rec.onerror = (e)=>{
+        let m="Erreur";
+        if(e.error==="not-allowed") m="🔇 Micro refusé";
+        else if(e.error==="no-speech") m="🎙️ Aucune parole";
+        resultPrononciation.innerHTML="<span class='error-badge'>⚠️ "+m+"</span>";
+        reset();
+    };
+    rec.onend = ()=>{ if(btnMic.disabled) reset(); };
+    function reset(){
+        btnMic.innerHTML = orig; btnMic.disabled = false; btnListen.disabled = false;
+        btnMic.classList.remove("mic-loading");
+    }
+}
+
+function similariteSimple(a,b){
+    if(a===b) return 1.0;
+    const court = a.length<b.length?a:b;
+    const long = a.length>=b.length?a:b;
+    if(long.length===0) return 0;
+    let m=0;
+    for(let i=0;i<court.length;i++){ if(long.includes(court[i])) m++; }
+    return m/long.length;
+}
+
+selectPrononciation.addEventListener("change",()=>{
+    phrasesDejaVues.clear();nouvellePhrase();
+    if(syntheseEnCours){window.speechSynthesis.cancel();syntheseEnCours=false;}
+    resultPrononciation.innerHTML="";
+});
+difficultySlider.addEventListener("input",()=>{
+    if(modeActuel==='infinite'){phrasesDejaVues.clear();nouvellePhrase();}
+});
+btnListen.addEventListener("click",ecouterPhrase);
+btnMic.addEventListener("click",demarrerReconnaissance);
+window.addEventListener("load",()=>{nouvellePhrase();});
+window.addEventListener("beforeunload",()=>{if(window.speechSynthesis)window.speechSynthesis.cancel();});
+
+// ==================== MODE TRADUCTION ====================
+document.getElementById('btn-traduire').addEventListener('click',async()=>{
+    const texte = document.getElementById('texte-a-traduire').value.trim();
+    const box = document.getElementById('box-resultat-traduction');
+    const trad = document.getElementById('texte-traduit');
+    if(!texte){box.classList.remove('show');return;}
+    trad.innerText="⏳ Traduction..."; box.classList.add('show');
+    try{
+        const r = await fetch("https://api.mymemory.translated.net/get?q="+encodeURIComponent(texte)+"&langpair="+document.getElementById('lang-source').value+"|"+document.getElementById('lang-cible').value);
+        const d = await r.json();
+        trad.innerText = d.responseData?.translatedText||"❌ Erreur";
+    } catch(e){ trad.innerText="❌ Pas de connexion"; }
+});
+document.getElementById('btn-ecouter-traduction').addEventListener('click',()=>{
+    const t = document.getElementById('texte-traduit').innerText;
+    if(!t||t.includes("⏳")||t.includes("❌")) return;
+    const u = new SpeechSynthesisUtterance(t);
+    u.lang = document.getElementById('lang-cible').value; u.rate=0.9;
+    window.speechSynthesis.speak(u);
+});
+
+// ==================== MODE FLASHCARDS ====================
+const selectFlash = document.getElementById('lang-select-flashcards');
+const flashcard = document.getElementById('flashcard');
+const fQuestion = document.getElementById('flashcard-question');
+const fAnswer = document.getElementById('flashcard-answer');
+const fCounter = document.getElementById('flashcard-counter');
+const btnKnow = document.getElementById('btn-know');
+const btnDontKnow = document.getElementById('btn-dont-know');
+const btnNext = document.getElementById('btn-next-flashcard');
+
+for(let code in banquesEssentielles){ selectFlash.add(new Option(nomsLangues[code]||code, code)); }
+
+let cartes=[], idx=0, retournee=false;
+
+function chargerFlashcards(){
+    const l = selectFlash.value;
+    const ess = (banquesEssentielles[l]||[]).map(p=>({question:p.fr, reponse:p.t, langue:l}));
+    const inf = [];
+    for(let i=0;i<10;i++){ const p=genererPhraseInfinie(l,Math.floor(Math.random()*2)+1); inf.push({question:p.fr,reponse:p.t,langue:l}); }
+    cartes = [...ess,...inf];
+    cartes.sort(()=>Math.random()-0.5);
+    idx=0; retournee=false; flashcard.classList.remove('flipped');
+    afficher();
+}
+function afficher(){
+    if(cartes.length===0){ fQuestion.innerText="Aucune"; fAnswer.innerText="—"; fCounter.innerText="0/0"; return; }
+    const c = cartes[idx];
+    fQuestion.innerText=c.question; fAnswer.innerText=c.reponse;
+    fCounter.innerText="Carte "+(idx+1)+"/"+cartes.length;
+    retournee=false; flashcard.classList.remove('flipped');
+}
+flashcard.addEventListener('click',()=>{ flashcard.classList.toggle('flipped'); retournee=!retournee; });
+btnKnow.addEventListener('click',(e)=>{e.stopPropagation(); suivant();});
+btnDontKnow.addEventListener('click',(e)=>{
+    e.stopPropagation();
+    if(cartes.length>1){ const c=cartes.splice(idx,1)[0]; cartes.push(c); if(idx>=cartes.length) idx=0; }
+    else idx=0;
+    flashcard.classList.remove('flipped'); retournee=false; afficher();
+});
+btnNext.addEventListener('click',(e)=>{e.stopPropagation(); suivant();});
+function suivant(){ if(cartes.length===0) return; idx=(idx+1)%cartes.length; flashcard.classList.remove('flipped'); retournee=false; afficher(); }
+selectFlash.addEventListener('change',chargerFlashcards);
+chargerFlashcards();
+</script>
+</body>
+</html>
